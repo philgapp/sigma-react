@@ -2,7 +2,9 @@ import React from 'react';
 //import { useQuery, gql } from '@apollo/client';
 
 const DashboardChart = (props) => {
-    const { data } = props;
+    const { chartData } = props;
+    const data = chartData.chartData
+    const balance = chartData.balance
     const dashboardChart = {}
     dashboardChart.title = "Dashboard Chart Title"
     return (
@@ -11,12 +13,14 @@ const DashboardChart = (props) => {
                 {dashboardChart.title}
             </div>
             <div>
-                {data &&
+                {chartData &&
                     <>
-                    <div>{data.balance}</div>
-                    <div>{data.cash}</div>
-                    <div>{data.options}</div>
-                    <div>{data.underlying}</div>
+                    <div>${data.cash}</div>
+                    <div>{((data.cash/balance)*100).toFixed(2) + "%"}</div>
+                    <div>${data.options}</div>
+                    <div>{((data.options/balance)*100).toFixed(2) + "%"}</div>
+                    <div>${data.underlying}</div>
+                    <div>{((data.underlying/balance)*100).toFixed(2) + "%"}</div>
                     </>
                 }
             </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useQuery, gql } from '@apollo/client';
+import DateFromInt from '../helpers/Date';
 import DashboardChart from './DashboardChart';
 
 const dashboardQuery = gql`
@@ -8,7 +9,7 @@ const dashboardQuery = gql`
       balance
       aroi
       bookedIncome
-      dashboardChart {
+      chart {
         cash
         options
         underlying
@@ -33,25 +34,27 @@ const dashboardQuery = gql`
 const Dashboard = (props) => {
     //const { dashboard } = props;
     const dashboard = {}
-    dashboard.description = "The first dashboard!"
+    dashboard.description = "The first real Sigma dashboard!"
     const { data } = useQuery(dashboardQuery);
+    const apiData = data ?  data.getDashboardForUser : null
     return (
         <div>
             <div>
                 {dashboard.description}
             </div>
             <div>
-                {data &&
+                {apiData &&
+
                     <>
-                    <div>{data.balance}</div>
-                    <div>{data.aroi}</div>
-                    <div>{data.bookedIncome}</div>
-                    <DashboardChart chartData={data.dashboardChart} />
-                    <div>{data.options.numberOpen}</div>
-                    <div>{data.options.potentialProfit}</div>
-                    <div>{data.options.nextExpiry}</div>
-                    <div>{data.underlying.numberOpen}</div>
-                    {data.underlying.symbols.map((position) => (
+                    <div>{apiData.balance}</div>
+                    <div>{apiData.aroi}</div>
+                    <div>{apiData.bookedIncome}</div>
+                    <DashboardChart chartData={{chartData:apiData.chart,balance:apiData.balance}} />
+                    <div>{apiData.options.numberOpen}</div>
+                    <div>{apiData.options.potentialProfit}</div>
+                    <div>{DateFromInt(apiData.options.nextExpiry)}</div>
+                    <div>{apiData.underlying.numberOpen}</div>
+                    {apiData.underlying.symbols.map((position) => (
                         <div>
                             <div>{position.symbol}</div>
                             <div>{position.qty}</div>

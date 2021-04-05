@@ -9,7 +9,9 @@ const Header = (props) => {
     return (
         <div>
             <div className={header}>
-                {header.title}
+                <h1>&sigma;</h1>
+                <h2>{header.title}</h2>
+
             </div>
         </div>
     );
