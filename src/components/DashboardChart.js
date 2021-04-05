@@ -6,20 +6,20 @@ const DashboardChart = (props) => {
     const data = chartData.chartData
     const balance = chartData.balance
     const dashboardChart = {}
-    dashboardChart.title = "Dashboard Chart Title"
+    dashboardChart.title = "Portfolio Status"
     return (
-        <div>
-            <div>
+        <div className={"dashboardChart"}>
+            <div className={"f4"}>
                 {dashboardChart.title}
             </div>
             <div>
                 {chartData &&
                     <>
-                    <div>${data.cash}</div>
+                    <div>${(data.cash).toLocaleString()}</div>
                     <div>{((data.cash/balance)*100).toFixed(2) + "%"}</div>
-                    <div>${data.options}</div>
+                    <div>${(data.options).toLocaleString()}</div>
                     <div>{((data.options/balance)*100).toFixed(2) + "%"}</div>
-                    <div>${data.underlying}</div>
+                    <div>${(data.underlying).toLocaleString()}</div>
                     <div>{((data.underlying/balance)*100).toFixed(2) + "%"}</div>
                     </>
                 }

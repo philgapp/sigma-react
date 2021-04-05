@@ -3,15 +3,18 @@ import React from 'react';
 const Header = (props) => {
     //const { header } = props;
     const header = {}
-    header.logo = ""
     header.title = "Sigma App"
     header.userOptions = ""
     return (
-        <div>
-            <div className={header}>
-                <h1>&sigma;</h1>
-                <h2>{header.title}</h2>
-
+        <div className={"flex items-center justify-between Header w-75"}>
+            <div className={"sigmaLogo"}>
+                <p>&sigma;</p>
+            </div>
+            <div>
+                <p>{header.title}</p>
+            </div>
+            <div className={"userSettings"}>
+                <p>{"Phillip"}</p>
             </div>
         </div>
     );

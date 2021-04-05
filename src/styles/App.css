@@ -2,26 +2,32 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
+.App .Header {
   background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  height: 12vh;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: darkgreen;
+}
+
+.Header p {
+  font-size: 1.3em;
+}
+
+.Header .sigmaLogo {
+  font-size: 1.6em;
+  margin-left: 20px
+}
+
+.Header .userSettings {
+  margin-right: 20px;
+}
+
+.dashboardChart {
+  margin: 2em;
+}
+
+.underlyingPositions {
+  margin: 2em;
 }
 
 .App-link {
