@@ -1,5 +1,6 @@
 import React from 'react';
 //import { useQuery, gql } from '@apollo/client';
+import { PieChart } from 'react-minimal-pie-chart';
 
 const DashboardChart = (props) => {
     const { chartData } = props;
@@ -15,12 +16,19 @@ const DashboardChart = (props) => {
             <div>
                 {chartData &&
                     <>
-                    <div>${(data.cash).toLocaleString()}</div>
-                    <div>{((data.cash/balance)*100).toFixed(2) + "%"}</div>
-                    <div>${(data.options).toLocaleString()}</div>
-                    <div>{((data.options/balance)*100).toFixed(2) + "%"}</div>
-                    <div>${(data.underlying).toLocaleString()}</div>
-                    <div>{((data.underlying/balance)*100).toFixed(2) + "%"}</div>
+                        <PieChart className={"w-50"}
+                            data={[
+                                { title: 'Available Cash', value: data.cash, color: '#E38627' },
+                                { title: 'Open Options', value: data.options, color: '#C13C37' },
+                                { title: 'Underlying Positions', value: data.underlying, color: '#6A2135' },
+                            ]}
+                        />
+                    <div></div>
+                    <div>Available Cash: {((data.cash/balance)*100).toFixed(2) + "%"}</div>
+                    <div></div>
+                    <div>Options Collateral: {((data.options/balance)*100).toFixed(2) + "%"}</div>
+                    <div></div>
+                    <div>Underlying Positions: {((data.underlying/balance)*100).toFixed(2) + "%"}</div>
                     </>
                 }
             </div>
