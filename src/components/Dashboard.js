@@ -2,6 +2,7 @@ import React from 'react';
 import { useQuery, gql } from '@apollo/client';
 import DateFromInt from '../helpers/Date';
 import DashboardChart from './DashboardChart';
+import Table from './Table'
 
 const dashboardQuery = gql`
   {
@@ -39,7 +40,7 @@ const Dashboard = (props) => {
     const apiData = data ?  data.getDashboardForUser : null
     return (
         <div className={"w-75"}>
-            <div className={"f3"}>
+            <div className={"f5 bold lightRed"}>
                 {dashboard.description}
             </div>
             <div>
@@ -59,14 +60,7 @@ const Dashboard = (props) => {
                     <div>Open Options: {apiData.options.numberOpen}</div>
                     <div>Potential Profit: ${(apiData.options.potentialProfit).toLocaleString()}</div>
                     <div>Next Expiration: {DateFromInt(apiData.options.nextExpiry)}</div>
-                    <div className={"underlyingPositions"}>Open Underlying Positions: {apiData.underlying.numberOpen}</div>
-                    {apiData.underlying.symbols.map((position) => (
-                        <div className={"flex items-center"}>
-                            <div className={"w-third pa3"}>{position.symbol}</div>
-                            <div className={"w-third pa3"}>x{position.qty}</div>
-                            <div className={"w-third pa3"}>Sell Target: ${(position.targetPrice).toLocaleString()}</div>
-                        </div>
-                    ))}
+                    <Table data={apiData.underlying.symbols} numPositions={apiData.underlying.numberOpen}/>
                     </>
                 }
             </div>

@@ -1,12 +1,32 @@
 .App {
-  text-align: center;
+  background: #DAD7CD;
+}
+.App .Header {
+  background-color: #E38627;
+  height: 10vh;
+  font-size: calc(10px + 2vmin);
+  color: #6A2135;
 }
 
-.App .Header {
-  background-color: #282c34;
-  height: 12vh;
-  font-size: calc(10px + 2vmin);
-  color: darkgreen;
+.f3 {
+  font-weight: bold;
+  color: #C13C37;
+}
+
+.darkRed {
+  color: #6A2135;
+}
+
+.lightRed {
+  color: #C13C37;
+}
+
+.gold {
+  color: #E38627;
+}
+
+.bold {
+  font-weight: bold;
 }
 
 .Header p {
@@ -32,6 +52,48 @@
 
 .App-link {
   color: #61dafb;
+}
+
+table {
+  margin-top: 1em;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  text-align: left;
+  border-bottom: 2px solid black;
+}
+
+thead button {
+  border: 0;
+  border-radius: none;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: inherit;
+  padding: 0.5em;
+  margin-bottom: 1px;
+}
+
+thead button.ascending::after {
+  content: '👇';
+  display: inline-block;
+  margin-left: 1em;
+}
+
+thead button.descending::after {
+  content: '☝️';
+  display: inline-block;
+  margin-left: 1em;
+}
+
+tbody td {
+  padding: 0.5em;
+  border-bottom: 1px solid #ccc;
+}
+
+tbody tr:hover {
+  background-color: #eee;
 }
 
 @keyframes App-logo-spin {
