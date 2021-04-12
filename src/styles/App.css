@@ -1,6 +1,12 @@
-.App {
+body {
   background: #DAD7CD;
 }
+
+p {
+  margin: 0;
+  padding: 4px 0;
+}
+
 .App .Header {
   background-color: #E38627;
   height: 10vh;
@@ -42,8 +48,77 @@
   margin-right: 20px;
 }
 
+.addItemButton {
+  position: absolute;
+  height: 70px;
+  width: 70px;
+  bottom: 20px;
+  right: 20px;
+  z-index: -9999;
+  border-radius: 50%;
+  background: black;
+}
+
+.addItemButton:hover {
+  background: dimgrey;
+}
+
+.addItemButton p {
+  text-align: center;
+  margin: 0 auto;
+  color: white;
+  font-weight: bold;
+  line-height: 100%;
+  padding: 25px 0;
+}
+
+.addItemMenu {
+  position: absolute;
+  bottom: 85px;
+}
+
+p.dashboardLabel {
+  font-size: 1.1em;
+  padding: 0;
+  margin: 0;
+}
+
+p.dashboardValue {
+  font-weight: bold;
+  font-size: 1.2em;
+  padding-top: 8px;
+  padding-bottom: 16px;
+  margin: 0;
+}
+
+.dashboardRight p {
+  text-align: right;
+  float: right;
+}
+
 .dashboardChart {
-  margin: 2em;
+  margin: 1em 3em 0 3em;
+}
+
+.dashboardChart .f4 {
+  text-align: center;
+  margin: 0 auto;
+}
+
+.dashboardChart svg {
+  padding-bottom: 1rem;
+}
+
+.dashboardChart p {
+  text-align: center;
+}
+
+.dashboardOptions {
+  margin: 3rem 2rem;
+}
+
+.dashboardOptions p {
+  padding-bottom: 8px;
 }
 
 .underlyingPositions {
@@ -55,36 +130,40 @@
 }
 
 table {
-  margin-top: 1em;
-  width: 100%;
+  margin: 1rem;
+  width: 90%;
   border-collapse: collapse;
 }
 
 thead th {
-  text-align: left;
-  border-bottom: 2px solid black;
+  text-align: center;
+  padding-right: 0.35em;
 }
 
 thead button {
-  border: 0;
-  border-radius: none;
+  border: 2px solid #6A2135;;
+  background: none;
+  border-radius: 10px;
   font-family: inherit;
   font-weight: 700;
   font-size: inherit;
   padding: 0.5em;
   margin-bottom: 1px;
 }
+button.ascending, button.descending {
+  background: #C13C37;
+}
 
 thead button.ascending::after {
-  content: '👇';
+  content: '\02C4';
   display: inline-block;
-  margin-left: 1em;
+  margin-left: 0.25em;
 }
 
 thead button.descending::after {
-  content: '☝️';
+  content: '\02C5';
   display: inline-block;
-  margin-left: 1em;
+  margin-left: 0.25em;
 }
 
 tbody td {
@@ -92,8 +171,34 @@ tbody td {
   border-bottom: 1px solid #ccc;
 }
 
+tbody td {
+  text-align: center;
+}
+
 tbody tr:hover {
   background-color: #eee;
+}
+
+label {
+  font-size: 1.2em;
+}
+
+.dateInput {
+  font-size: 1.2em;
+  width: 75%;
+  text-align: center;
+}
+
+.numberInput {
+  font-size: 1.2em;
+  width: 65%;
+  margin: 0 0 0 4px;
+}
+button.calculate {
+  margin: 24px 58px 12px 0;
+  padding: 6px;
+  font-size: 1.2em;
+  float: right;
 }
 
 @keyframes App-logo-spin {

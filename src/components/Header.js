@@ -6,7 +6,7 @@ const Header = (props) => {
     header.title = "Sigma App"
     header.userOptions = ""
     return (
-        <div className={"flex items-center justify-between Header w-75"}>
+        <div className={"flex items-center justify-between Header w-100"}>
             <div className={"sigmaLogo"}>
                 <p>&sigma;</p>
             </div>

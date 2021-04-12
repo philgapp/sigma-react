@@ -12,16 +12,16 @@ const DashboardChart = (props) => {
             { title: 'Underlying Positions', value: data.underlying, percentage:((data.underlying/balance)*100).toFixed(2) + "%", color: '#6A2135' },
         ];
     const dashboardChart = {}
-    dashboardChart.title = "Portfolio Status"
+    dashboardChart.title = "Portfolio Distribution"
     return (
         <div className={"dashboardChart"}>
-            <div className={"f4 darkRed bold"}>
+            <div className={"f4 darkRed bold pb3"}>
                 {dashboardChart.title}
             </div>
             <div>
                 {chartData &&
                     <>
-                        <PieChart className={"w-50"}
+                        <PieChart className={"w-100"}
                             data={dataForChart}
                             lineWidth={40}
                             paddingAngle={2}
@@ -33,12 +33,15 @@ const DashboardChart = (props) => {
                             })}
                             labelPosition={50}
                         />
-                    <div></div>
-                    <div className={'gold'}>Available Cash: ${(data.cash).toLocaleString()}</div>
-                    <div></div>
-                    <div className={'lightRed'}>Options Collateral: ${(data.options).toLocaleString()}</div>
-                    <div></div>
-                    <div className={'darkRed'}>Underlying Positions: ${(data.underlying).toLocaleString()}</div>
+                    <p className={'gold'}>
+                        Available Cash: ${(data.cash).toLocaleString()}
+                    </p>
+                    <p className={'lightRed'}>
+                        Options Collateral: ${(data.options).toLocaleString()}
+                    </p>
+                    <p className={'darkRed'}>
+                        Underlying Positions: ${(data.underlying).toLocaleString()}
+                    </p>
                     </>
                 }
             </div>
