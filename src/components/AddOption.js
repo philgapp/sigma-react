@@ -1,8 +1,58 @@
 import React, { useReducer, useState, useEffect } from 'react';
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { useQuery, gql } from '@apollo/client';
 
-const AroiCalculator = (props) => {
+const addOptionMutation = gql`
+  mutation {
+  createOption(input: {
+    userId: "temp1",
+    symbol: "TSLA",
+    type: P,
+    spreads: [
+      {
+        legs: [
+          {
+            qty: 1,
+            isSpread: false,
+            entryDate: 1617235200000,
+            expirationDate: 1621555200000,
+            strike: 22.5,
+            underlyingEntryPrice: 24,
+            initialPremium: 0.9,
+            notes: "Just some random test notes to play with...",
+          }
+        ]
+      }
+    ]
+  }) {
+      _id
+      symbol
+      type
+      spreads {
+        _id
+        legs {
+          _id
+          qty
+          entryDate
+          strike
+          expirationDate
+          initialPremium
+          initialRoi
+          initialAroi
+          capitalRequirement
+          notes
+        }
+      }
+      user {
+        _id
+        firstName
+        email
+      }
+    }
+}
+`;
+
+const AddOption = (props) => {
 
     const formReducer = (state, event) => {
         return {
@@ -21,6 +71,7 @@ const AroiCalculator = (props) => {
     }
 
     const [formData, setFormData] = useReducer(formReducer, {});
+    const [isSpread, setIsSpread] = useState(false);
     const [startDate, setStartDate] = useState(today);
     const [endDate, setEndDate] = useState(today);
     const [days, setDays] = useState(null)
@@ -29,17 +80,22 @@ const AroiCalculator = (props) => {
 
     const calcAroi = () => {
         const aroiDays = ((endDate - startDate)/86400000)
-        const tempRoi = formData.premium / formData.strike
-        const tempAroi = (tempRoi/aroiDays)*365
-        setRoi((tempRoi*100).toFixed(2))
-        if(!isNaN(tempAroi)) setAroi((tempAroi*100).toFixed(2))
+        const roi = formData.premium / formData.strike
+        const aroi = (roi/aroiDays)*365
+        if(!isNaN(roi) && !isNaN(aroi)) {
+            setRoi((roi * 100).toFixed(2))
+            setAroi((aroi * 100).toFixed(2))
+        }
     }
 
-    useEffect(() => {
-        calcAroi()
-    }, [formData.strike,formData.premium,startDate,endDate])
+    const handleSubmit = event => {
+        event.preventDefault()
+        console.log(formData)
+        // TODO Validate and Process form data, pass into addOptionMutation gql
+    }
 
     const handleChange = event => {
+        if(! event.target.name.includes('Date')) event.preventDefault()
         if(event.target.name === 'startDate') setStartDate(event.target.value)
         if(event.target.name === 'endDate') setEndDate(event.target.value)
         setDays((endDate - startDate)/86400000)
@@ -48,24 +104,22 @@ const AroiCalculator = (props) => {
             value: event.target.value,
         })
     }
-    // {symbol ? "for "+symbol ! ""}
+
+    useEffect(() => {
+        calcAroi()
+    },[formData.premium,formData.strike,startDate,endDate])
 
     return (
-        <div>
-            <h3 className={'f3 pa2'}>AROI Calculator</h3>
-            <p className={'pa2'}>To quickly check potential returns for trades. Optionally add more detail and quick-add to your open options!</p>
-            {aroi &&
-            <div className={'pl2 pb2'}>
-                <ul className={'list'}>
-                    <li key={aroi} className={'pb2'}>Your AROI is <span className={'bold'}>{aroi}%</span></li>
-                    <li key={startDate}>Days: {days}</li>
-                    <li key={'roi'}>ROI / ROC: {roi}%</li>
-                </ul>
-            </div>
-            }
-            <form>
+        <div className={'flex w-100'}>
+            <form onSubmit={() => handleSubmit}>
                 <fieldset>
-                    <div className={'flex w-100'}>
+                    <div className={'w-100'}>
+                        <div className={'w-100'}>
+                            <label >
+                                <p className={'required'}>Symbol / Ticker</p>
+                                <input type={'text'} placeholder={'SPY'} className={'symbol'} onChange={handleChange} />
+                            </label>
+                        </div>
                         <div className={'w-50'}>
                             <label className={'w-50'}>
                                 <p className={'required'}>Entry Date</p>
@@ -93,10 +147,33 @@ const AroiCalculator = (props) => {
                             </label>
                         </div>
                     </div>
+                    <button type={'submit'} className={'add'}>Add Option</button>
                 </fieldset>
             </form>
+
+            {/*
+                this.state.showMenu
+                    ? (
+                        <div className={'addItemMenu'}>
+                            <ul
+                                className="menu list"
+                                ref={(element) => {
+                                    this.dropdownMenu = element;
+                                }}
+                            >
+                                <li>Add an Option Trade</li>
+                                <li>Add an Underlying Trade</li>
+                                <li>Add a Banking Transaction</li>
+                            </ul>
+                        </div>
+                    )
+                    : (
+                        null
+                    )
+            */
+            }
         </div>
     );
 }
 
-export default AroiCalculator;
+export default AddOption;
