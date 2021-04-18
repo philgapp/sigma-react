@@ -33,8 +33,6 @@ const dashboardQuery = gql`
 `;
 
 const Dashboard = (props) => {
-    //const { dashboard } = props;
-    const dashboard = {}
     const { data } = useQuery(dashboardQuery);
     const apiData = data ?  data.getDashboardForUser : null
     return (

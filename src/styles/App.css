@@ -179,8 +179,22 @@ tbody tr:hover {
   background-color: #eee;
 }
 
-label {
+label.aroiCalc {
   font-size: 1.2em;
+}
+
+label p.required {
+  margin: 0;
+}
+
+label p.required::after {
+  content: "\002A";
+  padding-left: 4px;
+  color: darkred;
+}
+
+fieldset {
+  border:none;
 }
 
 .dateInput {
@@ -191,9 +205,12 @@ label {
 
 .numberInput {
   font-size: 1.2em;
-  width: 65%;
+  width: 40%;
   margin: 0 0 0 4px;
+  padding:8px;
+  text-align: center;
 }
+
 button.calculate {
   margin: 24px 58px 12px 0;
   padding: 6px;

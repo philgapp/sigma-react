@@ -44,11 +44,13 @@ const Options = (props) => {
     }
 
     return (
-        <div className={"w-75"}>
+        <div className={"w-100"}>
             <div className={"f3 pa2"}>
                 Options
             </div>
-            <button onClick={() => showForm(showOptionForm)}>{optionFormButtonText}</button>
+            <button onClick={() => showForm(showOptionForm)} className={'ml3'}>
+                {optionFormButtonText}
+            </button>
 
             {showOptionForm &&
                 <AddOption showOptionForm={showOptionForm} showForm={showForm} />

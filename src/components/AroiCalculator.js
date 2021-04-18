@@ -52,42 +52,42 @@ const AroiCalculator = (props) => {
 
     return (
         <div>
-            <h3 className={'f3 pa2'}>AROI Calculator</h3>
-            <p className={'pa2'}>To quickly check potential returns for trades. Optionally add more detail and quick-add to your open options!</p>
+            <h3 className={'f3 pl2'}>AROI Calculator</h3>
+            <p className={'pl3 '}>Quickly review potential trade idea returns.</p>
             {aroi &&
-            <div className={'pl2 pb2'}>
-                <ul className={'list'}>
-                    <li key={aroi} className={'pb2'}>Your AROI is <span className={'bold'}>{aroi}%</span></li>
-                    <li key={startDate}>Days: {days}</li>
-                    <li key={'roi'}>ROI / ROC: {roi}%</li>
+            <div className={'pl2'}>
+                <ul className={'list mb0'}>
+                    <li key={aroi} className={'pb3'}>AROI: <span className={'bold'}>{aroi}%</span></li>
+                    <li key={startDate} className={'pb1'}>Days: {days}</li>
+                    <li key={'roi'} >ROI: {roi}%</li>
                 </ul>
             </div>
             }
-            <form>
+            <form className={'pt3'}>
                 <fieldset>
                     <div className={'flex w-100'}>
                         <div className={'w-50'}>
-                            <label className={'w-50'}>
+                            <label className={'w-50 aroiCalc'}>
                                 <p className={'required'}>Entry Date</p>
                                 <DatePicker className={'dateInput'} selected={startDate} onChange={date => handleChange({target: {name:'startDate',value:date}})} />
                             </label>
                         </div>
                         <div className={'w-50'}>
-                            <label className={'w-50'}>
+                            <label className={'w-50 aroiCalc'}>
                                 <p className={'required'}>Expiration Date</p>
                                 <DatePicker className={'dateInput'} selected={endDate} onChange={date => handleChange({target: {name:'endDate',value:date}})} />
                             </label>
                         </div>
                     </div>
-                    <div className={'flex w-100'}>
+                    <div className={'flex w-100 pt3'}>
                         <div className={'w-50'}>
-                            <label>
+                            <label className={'aroiCalc'}>
                                 <p className={'required'}>Strike Price</p>
                                 $<input className={'numberInput'} name={'strike'} type={"number"} step=".01" placeholder={"Strike"} onChange={handleChange} />
                             </label>
                         </div>
                         <div className={'w-50'}>
-                            <label>
+                            <label className={'aroiCalc'}>
                                 <p className={'required'}>Premium Per Share</p>
                                 $<input className={'numberInput'} name={'premium'} type={"number"} step=".01" placeholder={"Premium"} onChange={handleChange} />
                             </label>
