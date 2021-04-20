@@ -278,7 +278,7 @@ const AddOption = (props) => {
                         </label>
                     </div>
 
-                    <button type={'submit'} className={'add'}>Add Option</button>
+                    <button type={'submit'} className={'mt3 pa3 add'}>Add Option</button>
                 </fieldset>
             </form>
 

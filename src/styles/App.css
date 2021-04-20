@@ -197,6 +197,10 @@ fieldset {
   border:none;
 }
 
+input, select {
+  border-radius: 5px;
+}
+
 .dateInput {
   font-size: 1.2em;
   width: 75%;
@@ -211,11 +215,8 @@ fieldset {
   text-align: center;
 }
 
-button.calculate {
-  margin: 24px 58px 12px 0;
-  padding: 6px;
-  font-size: 1.2em;
-  float: right;
+button.add {
+  border-radius: 15px;
 }
 
 @keyframes App-logo-spin {
