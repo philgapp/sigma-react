@@ -1,31 +1,222 @@
-.App {
+body {
+  background: #DAD7CD;
+}
+
+p {
+  margin: 0;
+  padding: 4px 0;
+}
+
+.App .Header {
+  background-color: #E38627;
+  height: 10vh;
+  font-size: calc(10px + 2vmin);
+  color: #6A2135;
+}
+
+.f3 {
+  font-weight: bold;
+  color: #C13C37;
+}
+
+.darkRed {
+  color: #6A2135;
+}
+
+.lightRed {
+  color: #C13C37;
+}
+
+.gold {
+  color: #E38627;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.Header p {
+  font-size: 1.3em;
+}
+
+.Header .sigmaLogo {
+  font-size: 1.6em;
+  margin-left: 20px
+}
+
+.Header .userSettings {
+  margin-right: 20px;
+}
+
+.addItemButton {
+  position: absolute;
+  height: 70px;
+  width: 70px;
+  bottom: 20px;
+  right: 20px;
+  z-index: -9999;
+  border-radius: 50%;
+  background: black;
+}
+
+.addItemButton:hover {
+  background: dimgrey;
+}
+
+.addItemButton p {
+  text-align: center;
+  margin: 0 auto;
+  color: white;
+  font-weight: bold;
+  line-height: 100%;
+  padding: 25px 0;
+}
+
+.addItemMenu {
+  position: absolute;
+  bottom: 85px;
+}
+
+p.dashboardLabel {
+  font-size: 1.1em;
+  padding: 0;
+  margin: 0;
+}
+
+p.dashboardValue {
+  font-weight: bold;
+  font-size: 1.2em;
+  padding-top: 8px;
+  padding-bottom: 16px;
+  margin: 0;
+}
+
+.dashboardRight p {
+  text-align: right;
+  float: right;
+}
+
+.dashboardChart {
+  margin: 1em 3em 0 3em;
+}
+
+.dashboardChart .f4 {
+  text-align: center;
+  margin: 0 auto;
+}
+
+.dashboardChart svg {
+  padding-bottom: 1rem;
+}
+
+.dashboardChart p {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.dashboardOptions {
+  margin: 3rem 2rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.dashboardOptions p {
+  padding-bottom: 8px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.underlyingPositions {
+  margin: 2em;
 }
 
 .App-link {
   color: #61dafb;
+}
+
+table {
+  margin: 1rem;
+  width: 90%;
+  border-collapse: collapse;
+}
+
+thead th {
+  text-align: center;
+  padding-right: 0.35em;
+}
+
+thead button {
+  border: 2px solid #6A2135;;
+  background: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: inherit;
+  padding: 0.5em;
+  margin-bottom: 1px;
+}
+button.ascending, button.descending {
+  background: #C13C37;
+}
+
+thead button.ascending::after {
+  content: '\02C4';
+  display: inline-block;
+  margin-left: 0.25em;
+}
+
+thead button.descending::after {
+  content: '\02C5';
+  display: inline-block;
+  margin-left: 0.25em;
+}
+
+tbody td {
+  padding: 0.5em;
+  border-bottom: 1px solid #ccc;
+}
+
+tbody td {
+  text-align: center;
+}
+
+tbody tr:hover {
+  background-color: #eee;
+}
+
+label.aroiCalc {
+  font-size: 1.2em;
+}
+
+label p.required {
+  margin: 0;
+}
+
+label p.required::after {
+  content: "\002A";
+  padding-left: 4px;
+  color: darkred;
+}
+
+fieldset {
+  border:none;
+}
+
+input, select {
+  border-radius: 5px;
+}
+
+.dateInput {
+  font-size: 1.2em;
+  width: 75%;
+  text-align: center;
+}
+
+.numberInput {
+  font-size: 1.2em;
+  width: 40%;
+  margin: 0 0 0 4px;
+  padding:8px;
+  text-align: center;
+}
+
+button.add {
+  border-radius: 15px;
 }
 
 @keyframes App-logo-spin {
