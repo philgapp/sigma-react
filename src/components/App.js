@@ -1,12 +1,19 @@
-import React from 'react';
+import React, {useState, useContext, createContext} from 'react';
 import {
     BrowserRouter as Router,
     Switch,
     Route,
     useLocation,
-    Link
+    Redirect,
+    Link,
+    useHistory
 } from "react-router-dom";
 import '../styles/App.css';
+import useAuth, {
+    ProvideAuth,
+    AuthButton
+}  from '../helpers/useAuth'
+import Login from './Login'
 import Header from './Header';
 import Dashboard from './Dashboard';
 import Options from './Options';
@@ -15,47 +22,83 @@ import AddItem from './AddItem'
 
 function App() {
         return (
-            <Router>
-                <div className={"App flex flex-column"}>
-                    <Header />
-                    <nav>
-                        <ul className={"flex list"}>
-                            <li className={'pa2'}>
-                                <Link to={'/'}>Dashboard </Link>
-                            </li>
-                            <li className={'pa2'}>
-                                <Link to={'/aroi'}>AROI Calc</Link>
-                            </li>
-                            <li className={'pa2'}>
-                                <Link to={'/options'}>Options</Link>
-                            </li>
-                        </ul>
-                    </nav>
+            <ProvideAuth>
+                <Router>
+                    <div className={"App flex flex-column"}>
+                        <Header />
 
-                    <AddItem />
+                    <Switch>
+                        <PrivateRoute path="/aroi">
+                            <AroiCalculator />
+                        </PrivateRoute>
+                        <PrivateRoute path="/options">
+                            <Options />
+                        </PrivateRoute>
+                        <PrivateRoute path="/dashboard">
+                            <Dashboard />
+                        </PrivateRoute>
+                        <Route path="/login">
+                            <Login />
+                        </Route>
+                        <Route path="*">
+                            <NoMatch />
+                        </Route>
+                    </Switch>
 
-                <Switch>
-                    <Route path="/aroi">
-                        <AroiCalculator />
-                    </Route>
-                    <Route path="/options">
-                        <Options />
-                    </Route>
-                    <Route path="/">
-                        <Dashboard />
-                    </Route>
-                    <Route path="*">
-                        <NoMatch />
-                    </Route>
-                </Switch>
-
-                </div>
-            </Router>
+                    </div>
+                </Router>
+            </ProvideAuth>
         );
 }
 
-function NoMatch() {
+function LoginPage() {
+    let history = useHistory();
     let location = useLocation();
+    let auth = useAuth();
+
+    let { from } = location.state || { from: { pathname: "/" } };
+    let login = () => {
+        auth.signin(() => {
+            history.replace(from);
+        });
+    };
+
+    return (
+        <div>
+            <p>You must log in to view the page at {from.pathname}</p>
+            <button onClick={login}>Log in</button>
+        </div>
+    );
+}
+
+
+
+
+
+
+function PrivateRoute({ children, ...rest }) {
+    const auth = useAuth();
+    return (
+        <Route
+            {...rest}
+            render={({ location }) =>
+                auth.user ? (
+                    children
+                ) : (
+                    <Redirect
+                        to={{
+                            pathname: "/login",
+                            state: { from: location }
+                        }}
+                    />
+                )
+            }
+        />
+    );
+}
+
+function NoMatch() {
+    const location = useLocation();
 
     return (
         <div>
