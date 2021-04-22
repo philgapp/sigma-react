@@ -1,6 +1,6 @@
 import React, {createContext, useContext, useState} from 'react';
 import { useQuery, useMutation, gql } from '@apollo/client';
-import {useHistory, Redirect} from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
 const loginQuery = gql`
   {
@@ -48,7 +48,6 @@ const useAuth = () => {
 
 const useProvideAuth = () => {
     const [user, setUser] = useState(null);
-    const history = useHistory();
 
     const signin = (username,password,setRedirect) => {
         if(username && password) {
@@ -59,6 +58,15 @@ const useProvideAuth = () => {
         }
     };
 
+    const googleSignin = (firstName,lastName,setRedirect) => {
+        if(firstName) {
+            setUser(firstName);
+            setRedirect("/dashboard")
+        } else {
+            console.error('Google login error.')
+        }
+    };
+
     const signout = props => {
         setUser(null);
     };
@@ -66,6 +74,7 @@ const useProvideAuth = () => {
     return {
         user,
         signin,
+        googleSignin,
         signout
     };
 }
