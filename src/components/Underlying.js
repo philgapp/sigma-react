@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
-import AddOption from './AddOption'
+import AddUnderlying from './AddUnderlying'
 import Table from './Table'
 
-const optionsQuery = gql`
-  {
-    getOptionsByUser(_id:"temp1") {
+const underlyingQuery = gql`
+  query getUnderlyingByUser($id:String) {
+    getUnderlyingByUser(_id:$id) {
       _id
       symbol
       user {
@@ -25,35 +25,35 @@ const optionsQuery = gql`
   }
 `;
 
-const Options = (props) => {
+const Underlying = (props) => {
 
-    const { data } = useQuery(optionsQuery);
+    const { data } = useQuery(underlyingQuery);
     const apiData = data ? data.getOptionsByUser : null
 
-    const [showOptionForm, setShowOptionForm] = useState(false);
-    const [optionFormButtonText, setOptionFormButtonText] = useState("Add an Option Trade");
+    const [showUnderlyingForm, setShowUnderlyingForm] = useState(false);
+    const [optionFormButtonText, setOptionFormButtonText] = useState("Add an Underlying Trade");
 
     const showForm = (props) => {
         if (props === false) {
-            setShowOptionForm(true)
+            setShowUnderlyingForm(true)
             setOptionFormButtonText("Hide Form")
         } else {
-            setShowOptionForm(false)
-            setOptionFormButtonText("Add an Option Trade")
+            setShowUnderlyingForm(false)
+            setOptionFormButtonText("Add an Underlying Trade")
         }
     }
 
     return (
         <div className={"w-100"}>
             <div className={"f3 pa2"}>
-                Option Positions
+                Underlying Positions
             </div>
-            <button onClick={() => showForm(showOptionForm)} className={'ml3 pa3 add'}>
+            <button onClick={() => showForm(showUnderlyingForm)} className={'ml3 pa3 add'}>
                 {optionFormButtonText}
             </button>
 
-            {showOptionForm &&
-                <AddOption showOptionForm={showOptionForm} showForm={showForm} />
+            {showUnderlyingForm &&
+                <AddUnderlying showUnderlyingForm={showUnderlyingForm} showForm={showForm} />
             }
 
             <div>
@@ -67,4 +67,4 @@ const Options = (props) => {
     );
 };
 
-export default Options;
+export default Underlying;

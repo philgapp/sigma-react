@@ -1,4 +1,4 @@
-import React, {useState, useContext, createContext} from 'react';
+import React, {useEffect} from 'react';
 import {
     BrowserRouter as Router,
     Switch,
@@ -17,64 +17,46 @@ import Login from './Login'
 import Header from './Header';
 import Dashboard from './Dashboard';
 import Options from './Options';
+import Underlying from './Underlying';
 import AroiCalculator from './AroiCalculator';
 import AddItem from './AddItem'
 
 function App() {
-        return (
-            <ProvideAuth>
-                <Router>
-                    <div className={"App flex flex-column"}>
-                        <Header />
-
-                    <Switch>
-                        <PrivateRoute path="/aroi">
-                            <AroiCalculator />
-                        </PrivateRoute>
-                        <PrivateRoute path="/options">
-                            <Options />
-                        </PrivateRoute>
-                        <PrivateRoute path="/dashboard">
-                            <Dashboard />
-                        </PrivateRoute>
-                        <Route path="/login">
-                            <Login />
-                        </Route>
-                        <Route path="*">
-                            <NoMatch />
-                        </Route>
-                    </Switch>
-
-                    </div>
-                </Router>
-            </ProvideAuth>
-        );
-}
-
-function LoginPage() {
-    let history = useHistory();
-    let location = useLocation();
-    let auth = useAuth();
-
-    let { from } = location.state || { from: { pathname: "/" } };
-    let login = () => {
-        auth.signin(() => {
-            history.replace(from);
-        });
-    };
-
     return (
-        <div>
-            <p>You must log in to view the page at {from.pathname}</p>
-            <button onClick={login}>Log in</button>
-        </div>
+        <ProvideAuth>
+            <Router>
+                <div className={"App flex flex-column"}>
+                    <Header />
+
+                <Switch>
+                    <PrivateRoute path="/aroi">
+                        <AroiCalculator />
+                    </PrivateRoute>
+                    <PrivateRoute path="/options">
+                        <Options />
+                    </PrivateRoute>
+                    <PrivateRoute path="/underlying">
+                        <Underlying />
+                    </PrivateRoute>
+                    <PrivateRoute path="/dashboard">
+                        <Dashboard />
+                    </PrivateRoute>
+                    <Route path="/login">
+                        <Login />
+                    </Route>
+                    <Route path="/">
+                        <Login />
+                    </Route>
+                    <Route path="*">
+                        <NoMatch />
+                    </Route>
+                </Switch>
+
+                </div>
+            </Router>
+        </ProvideAuth>
     );
 }
-
-
-
-
-
 
 function PrivateRoute({ children, ...rest }) {
     const auth = useAuth();
@@ -82,7 +64,7 @@ function PrivateRoute({ children, ...rest }) {
         <Route
             {...rest}
             render={({ location }) =>
-                auth.user ? (
+                auth.authenticated ? (
                     children
                 ) : (
                     <Redirect

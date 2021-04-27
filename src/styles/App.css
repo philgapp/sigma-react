@@ -35,17 +35,68 @@ p {
   font-weight: bold;
 }
 
-.Header p {
-  font-size: 1.3em;
-}
-
 .Header .sigmaLogo {
   font-size: 1.6em;
-  margin-left: 20px
+  margin-left: 20px;
+  margin-top: 10px;
+  width: 10%;
+}
+
+.Header .sigmaLogo p {
+  font-size:60px;
+}
+
+.Header .title {
+  padding-top:30px;
+  font-size: 35px;
+  font-weight: bold;
+  margin-left: 20px;
+  width: 50%;
+  white-space: nowrap;
 }
 
 .Header .userSettings {
   margin-right: 20px;
+  padding-top:10px;
+  text-align: right;
+}
+
+nav li {
+  margin-right: 2%;
+  background-repeat: no-repeat;
+  background-size: 28px 28px;
+  background-position-y: 4px;
+}
+
+nav li a {
+  text-decoration: none;
+  color: darkred;
+  padding:8px 16px;
+  padding-left:32px;
+}
+
+nav li.dashboardIcon {
+  background-image: url(../assets/chartDashColor.png);
+}
+
+nav li.aroiIcon {
+  background-image: url(../assets/percentageCircleIcon.png);
+}
+
+nav li.optionIcon {
+  background-image: url(../assets/optionIcon.png);
+  background-size: 34px 34px;
+  background-position-y: 2px;
+}
+
+nav li.underlyingIcon {
+  background-image: url(../assets/shareIcon.png);
+  background-size: 36px 36px;
+  background-position-y: 1px;
+}
+
+nav li a:hover {
+  color: darkgoldenrod;
 }
 
 .addItemButton {
@@ -225,5 +276,30 @@ button.add {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+
+@media (min-width: 600px){
+  .dashboardChart {
+    width:75%;
+    margin:0 auto;
+  }
+}
+
+@media (min-width: 768px){
+  .dashboardChart {
+    width:60%;
+    margin:0 auto;
+  }
+
+  .aroiCalcForm {
+    width: 650px;
+  }
+}
+
+@media (min-width: 1080px){
+  .dashboardChart {
+    width:40%;
   }
 }

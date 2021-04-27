@@ -1,40 +1,64 @@
-import React, {createContext, useContext, useState} from 'react';
-import { useQuery, useMutation, gql } from '@apollo/client';
-import {useHistory} from "react-router-dom";
+import React, {createContext, useContext, useState, useEffect} from 'react';
+import { useQuery, useLazyQuery, useMutation, gql } from '@apollo/client';
+import {useHistory, redirect, Redirect} from "react-router-dom";
 
-const loginQuery = gql`
+const useImperativeQuery = (query) => {
+    const { refetch } = useQuery(query, { skip: true });
+
+    const imperativelyCallQuery = (variables) => {
+        return refetch(variables);
+    }
+
+    return imperativelyCallQuery;
+}
+
+const sessionQuery = gql`
   {
-    getLogin(user:$user) {
-      _id
-      symbol
-      user {
-        email
-      }
-      spreads {
-        legs {
-          qty
-          entryDate
-          strike
-          expirationDate
-          initialAroi
-          notes
-        }
-      }
-  } 
+    getSession
   }
 `;
 
-const fakeAuth = {
-    isAuthenticated: false,
-    signin(cb) {
-        fakeAuth.isAuthenticated = true;
-        setTimeout(cb, 100); // fake async
-    },
-    signout(cb) {
-        fakeAuth.isAuthenticated = false;
-        setTimeout(cb, 100);
+const sessionUserQuery = gql`
+  query GetSessionUser($session: String!) {
+    getSessionUser(session: $session) {
+        _id
+        firstName
+        lastName
+        email
+        authType
     }
-};
+  }
+`;
+
+const destroySessionQuery = gql`
+  query DestroySession($session: String!) {
+    destroySession(session: $session)
+  }
+`;
+
+const upsertUserMutation = gql`
+  mutation upsertUser($input: UserInput!) {
+      upsertUser(input: $input) {
+        _id
+        firstName
+        lastName
+        email
+        authType
+      }
+  }
+`;
+
+const loginQuery = gql`
+  query login($input: LoginInput!) {
+    login(input: $input) {
+      _id
+      email
+      firstName
+      lastName
+      authType
+    } 
+  }
+`;
 
 /** For more details on
  * `authContext`, `ProvideAuth`, `useAuth` and `useProvideAuth`
@@ -47,35 +71,160 @@ const useAuth = () => {
 }
 
 const useProvideAuth = () => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState({});
+    const [authenticated, setAuthenticated] = useState(null);
+    const [sessionID, setSessionID] = useState(null);
+    const getSession = useImperativeQuery(sessionQuery);
+    const getLogin = useImperativeQuery(loginQuery);
+    const getUser = useImperativeQuery(sessionUserQuery,{ errorPolicy: 'all' });
+    const [destroySession] = useLazyQuery(destroySessionQuery);
+    const [upsertUser, {data}] = useMutation(upsertUserMutation)
+
+    const isAuthenticated = async (variables) => {
+        const { data, error } = await getUser(variables)
+        if (error) console.error(error)
+        return data.getSessionUser
+    }
+
+    const getSessionPlease = async () => {
+        const { data, error } = await getSession()
+        if (error) console.error(error)
+        return data.getSession
+    }
+
+    //const writeUserToAPISession
+
+    //const writeUserToAPIDatabase
+
+    const signup = (props) => {
+        const input = { input: {} }
+        input.input.firstName = props.firstName
+        input.input.lastName = props.lastName
+        input.input.email = props.email
+        input.input.authType = props.authType
+        input.input.password = props.password
+        upsertUser({variables:input})
+            .then(res => {
+                console.log(res.data)
+                //setAuthenticated(true)
+                //setUser(res);
+                //setRedirect("/dashboard")
+            })
+            .catch(e => {
+                console.error(e)
+            })
+    }
 
     const signin = (username,password,setRedirect) => {
         if(username && password) {
-            setUser(username);
-            setRedirect("/dashboard")
+            // 1: Verify username and password in API
+            // 2: Authenticate user in API
+            getLogin({
+                    input: {
+                        username: username,
+                        password: password
+                    }
+
+            })
+                .then(res => {
+                    // 3: Set user data into API session, return to here
+                    //console.log(res)
+                    // 4: Set user data in React state and keep in sync with API
+                    setUser(res.data.login);
+                    setAuthenticated(true)
+                    // 5: Redirect successful user to dashboard
+                    setRedirect("/dashboard")
+                })
+            // 6: ERROR REPORTING!
         } else {
             console.error('Need username and password to login.')
         }
     };
 
-    const googleSignin = (firstName,lastName,setRedirect) => {
-        if(firstName) {
-            setUser(firstName);
-            setRedirect("/dashboard")
+    const googleSignin = (user, setRedirect) => {
+        console.log("useAuth googleSignin")
+        // First, always make sure the sessionID state is set by getting the sessionID from the API
+        /*
+        if(!sessionID) {
+            getSessionPlease()
+                .then(res => {
+                    setSessionID(res)
+                })
+        }
+
+         */
+        if(user) {
+            console.log(user)
+
+            const input = { input: {} }
+            input.input.firstName = user.firstName
+            input.input.lastName = user.lastName
+            input.input.email = user.email
+            input.input.authType = user.authType
+            //input.input.password = user.password
+            upsertUser({variables:input})
+                .then(res => {
+                    console.log(res)
+                    setUser(res.data.upsertUser);
+                    setRedirect("/dashboard")
+                })
+                .catch(e => {
+                    console.error(e)
+                })
+
         } else {
             console.error('Google login error.')
         }
     };
 
-    const signout = props => {
-        setUser(null);
+    const Signout = props => {
+        console.log("useAuth signout")
+        const res = destroySession({ variables:{ session: sessionID } })
+        console.log(res)
+        setAuthenticated(false)
+        setSessionID(null)
+        setUser({})
     };
+
+    useEffect( () => {
+        try {
+            console.log("useAuth")
+            console.log(authenticated)
+            if(!authenticated) {
+                // Should we be authenticated? Check API session and user detail
+
+                getSessionPlease()
+                    .then(res => {
+                        if(res) {
+                            setSessionID(res)
+                            console.log(res)
+                            isAuthenticated({ session: res }  )
+                                .then(res => {
+                                    console.log(res)
+                                    if(res) {
+                                        if(res._id !== null) {
+                                            setUser(res)
+                                            setAuthenticated(true)
+                                        }
+                                    }
+                                })
+
+                        }
+                    })
+            }
+        } catch(e) {
+            console.error(e)
+        }
+    })
 
     return {
         user,
+        sessionID,
+        authenticated,
+        signup,
         signin,
         googleSignin,
-        signout
+        Signout
     };
 }
 
@@ -86,24 +235,25 @@ export function ProvideAuth({ children }) {
             {children}
         </authContext.Provider>
     );
+
 }
 
 export function AuthButton() {
     const history = useHistory();
     const auth = useAuth();
 
-    return auth.user ? (
+    return auth.authenticated ? (
         <p>
             <button
                 onClick={() => {
-                    auth.signout(() => history.push("/"));
+                    auth.Signout(() => history.push("/"));
                 }}
             >
                 Sign out
             </button>
         </p>
     ) : (
-        <p></p>
+        <p>Sign In</p>
     );
 }
 

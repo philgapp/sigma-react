@@ -63,7 +63,7 @@ const AroiCalculator = (props) => {
                 </ul>
             </div>
             }
-            <form className={'pt3'}>
+            <form className={'aroiCalcForm pt3'}>
                 <fieldset>
                     <div className={'flex w-100'}>
                         <div className={'w-50'}>
