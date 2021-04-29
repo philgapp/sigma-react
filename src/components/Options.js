@@ -7,7 +7,7 @@ import useAuth from '../helpers/useAuth'
 const Options = (props) => {
 
     const auth = useAuth()
-    const { data } = useOptionsQuery({variables: {id: auth.user._id} });
+    const { data, refetch } = useOptionsQuery({variables: {id: auth.user._id} });
     const apiData = data ? data.getOptionsByUser : null
 
     const [showOptionForm, setShowOptionForm] = useState(false);
@@ -31,7 +31,7 @@ const Options = (props) => {
             </button>
 
             {showOptionForm &&
-                <AddOption apiData={apiData} showOptionForm={showOptionForm} showForm={showForm} />
+                <AddOption refetch={refetch} showOptionForm={showOptionForm} showForm={showForm} />
             }
 
             <div>

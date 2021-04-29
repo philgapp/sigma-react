@@ -1,5 +1,4 @@
 import {useMutation, gql} from "@apollo/client";
-import useOptionsQuery from "./useOptionsQuery";
 
 const addOptionMutation = gql`
   mutation createOption($input: OptionInput!) {
@@ -21,5 +20,5 @@ const addOptionMutation = gql`
 
 export default (variables) => {
     const [addOption] = useMutation(addOptionMutation, variables);
-    return addOption;
+    return addOption
 };

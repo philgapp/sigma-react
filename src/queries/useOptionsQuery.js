@@ -19,4 +19,4 @@ const optionsQuery = gql`
   }
 `;
 
-export default (variables) => useQuery(optionsQuery,variables);
+export default (variables) => useQuery(optionsQuery, variables);

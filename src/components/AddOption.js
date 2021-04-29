@@ -46,8 +46,6 @@ const AddOption = (props) => {
         leg1.isSpread = isSpread
         leg1.entryDate = formData.startDate
         leg1.expirationDate = formData.endDate
-        console.log(leg1.entryDate)
-        console.log(leg1.expirationDate)
         leg1.strike = parseFloat(formData.strike)
         leg1.underlyingEntryPrice = parseFloat(formData.underlyingEntryPrice)
         leg1.initialPremium = parseFloat(formData.premium)
@@ -67,11 +65,11 @@ const AddOption = (props) => {
     const handleSubmit = event => {
         event.preventDefault()
         const variables = processFormData()
-        console.log(variables)
 
         runAddOption({variables:variables})
             .then(res => {
                 const newPosition = res.data.createOption
+                props.refetch()
                 if(props.apiData) {
                     // TODO fix updating the Apollo cache, and updating tables with new data, etc.
                 }
