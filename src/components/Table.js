@@ -63,7 +63,7 @@ const Table = (props) => {
             }
             {tableType === "allOptions" &&
             <table>
-                <caption className={'f4 darkRed bold'}>Option Positions</caption>
+                <caption className={'f4 darkRed bold pb3'}>Option Positions</caption>
                 <thead>
                 <tr>
                     <th>

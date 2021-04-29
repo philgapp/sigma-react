@@ -36,11 +36,9 @@ const Dashboard = (props) => {
     const { data } = useQuery(dashboardQuery);
     const apiData = data ?  data.getDashboardForUser : null
     return (
-        <div className={"w-100"}>
-            <div>
-                {apiData &&
-
-                    <>
+        <div className={"appPage w-100"}>
+            {apiData &&
+                <div>
                     <div className={"flex"}>
                         <div className={"dashboardLeft w-50 pl4"}>
                             <p className={"dashboardLabel"} >
@@ -75,9 +73,8 @@ const Dashboard = (props) => {
                     </div>
 
                     <Table data={apiData.underlying.symbols} numPositions={apiData.underlying.numberOpen} tableType={"dashboardUnderlying"}/>
-                    </>
-                }
-            </div>
+                </div>
+            }
         </div>
     );
 };

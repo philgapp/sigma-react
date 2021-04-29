@@ -29,6 +29,7 @@ const AroiCalculator = (props) => {
 
     const calcAroi = () => {
         const aroiDays = ((endDate - startDate)/86400000)
+        setDays(aroiDays)
         const tempRoi = formData.premium / formData.strike
         const tempAroi = (tempRoi/aroiDays)*365
         setRoi((tempRoi*100).toFixed(2))
@@ -37,12 +38,11 @@ const AroiCalculator = (props) => {
 
     useEffect(() => {
         calcAroi()
-    }, [formData.strike,formData.premium,startDate,endDate])
+    }, [formData.strike,formData.premium,startDate,endDate,days])
 
     const handleChange = event => {
         if(event.target.name === 'startDate') setStartDate(event.target.value)
         if(event.target.name === 'endDate') setEndDate(event.target.value)
-        setDays((endDate - startDate)/86400000)
         setFormData({
             name: event.target.name,
             value: event.target.value,
@@ -51,8 +51,8 @@ const AroiCalculator = (props) => {
     // {symbol ? "for "+symbol ! ""}
 
     return (
-        <div>
-            <h3 className={'f3 pl2'}>AROI Calculator</h3>
+        <div className={"appPage"}>
+            <h3 className={'f3'}>AROI Calculator</h3>
             <p className={'pl3 '}>Quickly review potential trade idea returns.</p>
             {aroi &&
             <div className={'pl2'}>

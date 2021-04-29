@@ -44,10 +44,8 @@ const Underlying = (props) => {
     }
 
     return (
-        <div className={"w-100"}>
-            <div className={"f3 pa2"}>
-                Underlying Positions
-            </div>
+        <div className={"appPage w-100"}>
+            <h3 className={"f3"}>Underlying Positions</h3>
             <button onClick={() => showForm(showUnderlyingForm)} className={'ml3 pa3 add'}>
                 {optionFormButtonText}
             </button>

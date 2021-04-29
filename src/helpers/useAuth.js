@@ -106,6 +106,7 @@ const useProvideAuth = () => {
         upsertUser({variables:input})
             .then(res => {
                 console.log(res.data)
+                // TODO complete signup process and make it tight :)
                 //setAuthenticated(true)
                 //setUser(res);
                 //setRedirect("/dashboard")
@@ -142,7 +143,6 @@ const useProvideAuth = () => {
     };
 
     const googleSignin = (user, setRedirect) => {
-        console.log("useAuth googleSignin")
         // First, always make sure the sessionID state is set by getting the sessionID from the API
         /*
         if(!sessionID) {
@@ -154,33 +154,34 @@ const useProvideAuth = () => {
 
          */
         if(user) {
-            console.log(user)
-
-            const input = { input: {} }
-            input.input.firstName = user.firstName
-            input.input.lastName = user.lastName
-            input.input.email = user.email
-            input.input.authType = user.authType
-            //input.input.password = user.password
-            upsertUser({variables:input})
+            const input = {
+                input: {
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    authType: user.authType,
+                    // password: user.password
+                }
+            }
+            upsertUser({variables: input })
                 .then(res => {
-                    console.log(res)
                     setUser(res.data.upsertUser);
                     setRedirect("/dashboard")
                 })
                 .catch(e => {
                     console.error(e)
                 })
-
         } else {
             console.error('Google login error.')
         }
     };
 
     const Signout = props => {
-        console.log("useAuth signout")
-        const res = destroySession({ variables:{ session: sessionID } })
-        console.log(res)
+        const res = destroySession({
+            variables: {
+                session: sessionID
+            }
+        })
         setAuthenticated(false)
         setSessionID(null)
         setUser({})
@@ -188,23 +189,20 @@ const useProvideAuth = () => {
 
     useEffect( () => {
         try {
-            console.log("useAuth")
-            console.log(authenticated)
             if(!authenticated) {
                 // Should we be authenticated? Check API session and user detail
-
                 getSessionPlease()
                     .then(res => {
                         if(res) {
                             setSessionID(res)
-                            console.log(res)
                             isAuthenticated({ session: res }  )
                                 .then(res => {
-                                    console.log(res)
                                     if(res) {
                                         if(res._id !== null) {
                                             setUser(res)
                                             setAuthenticated(true)
+                                        } else {
+                                            setAuthenticated(false)
                                         }
                                     }
                                 })
@@ -235,10 +233,9 @@ export function ProvideAuth({ children }) {
             {children}
         </authContext.Provider>
     );
-
 }
 
-export function AuthButton() {
+export function SignoutButton(props) {
     const history = useHistory();
     const auth = useAuth();
 
@@ -247,6 +244,7 @@ export function AuthButton() {
             <button
                 onClick={() => {
                     auth.Signout(() => history.push("/"));
+                    props.setShowUserMenu(false)
                 }}
             >
                 Sign out

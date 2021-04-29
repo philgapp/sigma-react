@@ -1,33 +1,13 @@
 import React, { useState } from 'react';
-import { useQuery, gql } from '@apollo/client';
+import useOptionsQuery from "../queries/useOptionsQuery";
 import AddOption from './AddOption'
 import Table from './Table'
-
-const optionsQuery = gql`
-  {
-    getOptionsByUser(_id:"temp1") {
-      _id
-      symbol
-      user {
-        email
-      }
-      spreads {
-        legs {
-          qty
-          entryDate
-          strike
-          expirationDate
-          initialAroi
-          notes
-        }
-      }
-  } 
-  }
-`;
+import useAuth from '../helpers/useAuth'
 
 const Options = (props) => {
 
-    const { data } = useQuery(optionsQuery);
+    const auth = useAuth()
+    const { data } = useOptionsQuery({variables: {id: auth.user._id} });
     const apiData = data ? data.getOptionsByUser : null
 
     const [showOptionForm, setShowOptionForm] = useState(false);
@@ -44,16 +24,14 @@ const Options = (props) => {
     }
 
     return (
-        <div className={"w-100"}>
-            <div className={"f3 pa2"}>
-                Option Positions
-            </div>
+        <div className={"appPage w-100"}>
+            <h3 className={"f3"}>Option Positions</h3>
             <button onClick={() => showForm(showOptionForm)} className={'ml3 pa3 add'}>
                 {optionFormButtonText}
             </button>
 
             {showOptionForm &&
-                <AddOption showOptionForm={showOptionForm} showForm={showForm} />
+                <AddOption apiData={apiData} showOptionForm={showOptionForm} showForm={showForm} />
             }
 
             <div>

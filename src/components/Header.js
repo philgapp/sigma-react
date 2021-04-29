@@ -1,49 +1,84 @@
-import React from 'react';
-import useAuth, { AuthButton } from '../helpers/useAuth'
+import React, {useState} from 'react';
+import useAuth, { SignoutButton } from '../helpers/useAuth'
 import {Link} from "react-router-dom";
 
 const Header = (props) => {
     //const { header } = props;
     const header = {}
+    const [showUserMenu, setShowUserMenu] = useState(false)
     header.title = "Sigma App"
-    header.userOptions = ""
     const auth = useAuth()
-    const signedIn = auth.authenticated
-    const firstName = signedIn ? auth.user.firstName : ""
+    const firstName = auth.authenticated ? auth.user.firstName : ""
 
-    const sessionID = auth.sessionID ? "sessionID set" : false
+    const toggleUserMenu = props => {
+        props.e.preventDefault()
+        props.showUserMenu == false ? setShowUserMenu(true) : setShowUserMenu(false)
+    }
+
     return (
         <>
-            <div className={"flex Header w-100"}>
-                <div className={"sigmaLogo"}>
-                    <p>&sigma;</p>
+            <div className={"Header"}>
+                <div className={"flex w-100"}>
+
+                    <div className={"flex w-75 fl"}>
+                        <div className={"sigmaLogo w-25"}>
+                            <p>&sigma;</p>
+                        </div>
+                        <div className={"title"}>
+                            <p>{header.title}</p>
+                        </div>
+                    </div>
+
+                    {auth.authenticated &&
+                    <div className={"w-25 fr"}>
+                        <div className={"userSettings self-start"}>
+                            <a className={"userButton"}
+                               onClick={(e) => toggleUserMenu({e, showUserMenu: showUserMenu})}>
+                                {firstName || ""}
+                            </a>
+                        </div>
+                    </div>
+                    }
+
+                <div className={"cf"}></div>
+
                 </div>
-                <div className={"title"}>
-                    <p>{header.title}</p>
-                </div>
-                <div className={"userSettings fr"}>
-                    <p>{firstName || ""}</p>
-                    <AuthButton />
-                </div>
+
+                {auth.authenticated &&
+                <nav className={"mt2 mb2"}>
+                    <ul className={"flex list"}>
+                        <li className={'pa2 dashboardIcon'}>
+                            <Link to={'/dashboard'}>Dashboard </Link>
+                        </li>
+                        <li className={'pa2 optionIcon'}>
+                            <Link to={'/options'}>Options</Link>
+                        </li>
+                        <li className={'pa2 underlyingIcon'}>
+                            <Link to={'/underlying'}>Underlying</Link>
+                        </li>
+                        <li className={'pa2 aroiIcon'}>
+                            <Link to={'/aroi'}>AROI Calc</Link>
+                        </li>
+                    </ul>
+                </nav>
+                }
             </div>
-            {signedIn &&
-            <nav className={"mt2 mb2"}>
-                <ul className={"flex list"}>
-                    <li className={'pa2 dashboardIcon'}>
-                        <Link to={'/dashboard'}>Dashboard </Link>
-                    </li>
-                    <li className={'pa2 aroiIcon'}>
-                        <Link to={'/aroi'}>AROI Calc</Link>
-                    </li>
-                    <li className={'pa2 optionIcon'}>
-                        <Link to={'/options'}>Options</Link>
-                    </li>
-                    <li className={'pa2 underlyingIcon'}>
-                        <Link to={'/underlying'}>Underlying</Link>
-                    </li>
-                </ul>
-            </nav>
+
+            {(showUserMenu && auth.authenticated) &&
+            <div className={"userMenu"}>
+                <p>
+                    <button
+                        onClick={(e) => {
+                           e.preventDefault();
+                        }}
+                    >
+                        Profile Settings
+                    </button>
+                </p>
+                <SignoutButton setShowUserMenu={setShowUserMenu} />
+            </div>
             }
+
         </>
     );
 };

@@ -7,13 +7,6 @@ p {
   padding: 4px 0;
 }
 
-.App .Header {
-  background-color: #E38627;
-  height: 10vh;
-  font-size: calc(10px + 2vmin);
-  color: #6A2135;
-}
-
 .f3 {
   font-weight: bold;
   color: #C13C37;
@@ -35,11 +28,16 @@ p {
   font-weight: bold;
 }
 
+.Header {
+  background-color: #e38627;
+  height: 160px;
+  color: #6A2135;
+  margin-bottom: 16px;
+}
+
 .Header .sigmaLogo {
-  font-size: 1.6em;
+  font-size: 2em;
   margin-left: 20px;
-  margin-top: 10px;
-  width: 10%;
 }
 
 .Header .sigmaLogo p {
@@ -47,18 +45,40 @@ p {
 }
 
 .Header .title {
-  padding-top:30px;
+  padding-top:20px;
   font-size: 35px;
   font-weight: bold;
   margin-left: 20px;
-  width: 50%;
   white-space: nowrap;
 }
 
 .Header .userSettings {
   margin-right: 20px;
-  padding-top:10px;
+  padding-top: 20px;
   text-align: right;
+}
+
+.Header .userSettings a.userButton {
+  padding-right:42px;
+  background-image: url(../assets/menuIcon3.png);
+  background-repeat: no-repeat;
+  background-size: 28px;
+  background-position: right center;
+  font-size: 1.2em;
+}
+
+.Header .userSettings a.userButton:hover {
+  cursor: pointer;
+  color: black;
+}
+
+.userMenu {
+  position: absolute;
+  top: 50px;
+  right: 20px;
+}
+nav {
+  padding-top:2px;
 }
 
 nav li {
@@ -71,16 +91,12 @@ nav li {
 nav li a {
   text-decoration: none;
   color: darkred;
-  padding:8px 16px;
-  padding-left:32px;
+  padding: 8px 16px;
+  padding-left: 32px;
 }
 
 nav li.dashboardIcon {
   background-image: url(../assets/chartDashColor.png);
-}
-
-nav li.aroiIcon {
-  background-image: url(../assets/percentageCircleIcon.png);
 }
 
 nav li.optionIcon {
@@ -95,8 +111,16 @@ nav li.underlyingIcon {
   background-position-y: 1px;
 }
 
+nav li.aroiIcon {
+  background-image: url(../assets/percentageCircleIcon.png);
+}
+
 nav li a:hover {
-  color: darkgoldenrod;
+  color: black;
+}
+
+.appPage {
+  padding-left: 2em;
 }
 
 .addItemButton {
@@ -296,6 +320,10 @@ button.add {
   .aroiCalcForm {
     width: 650px;
   }
+
+  /*
+  TODO main nav breakpoint....
+   */
 }
 
 @media (min-width: 1080px){
