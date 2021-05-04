@@ -31,24 +31,52 @@ const AddUnderlying = (props) => {
     const [newSymbol, setNewSymbol] = useState(false);
     const [tradeDate, setTradeDate] = useState(today);
     const [startDate, setStartDate] = useState(today);
-    const [endDate, setEndDate] = useState(null);
+
+    /*
+    type UnderlyingHistory {
+        _id: ID
+        userId: ID
+        symbol: String
+        startDate: Date
+        endDate: Date
+        underlyingTrades: [UnderlyingTrade]
+    }
+    type UnderlyingTrade {
+        _id: ID
+        type: UnderlyingTradeType
+        date: String
+        shares: String
+        price: String
+    }
+
+    input UnderlyingInput {
+        userId: ID
+        symbol: String
+        startDate: Date
+        endDate: Date
+        underlyingTrades: UnderlyingTradeInput
+      }
+      input UnderlyingTradeInput {
+        type: UnderlyingTradeType
+        date: String
+        shares: String
+        price: String
+      }
+
+ */
 
     const processFormData = () => {
         const underlyingInput = {}
+        underlyingInput._id = formData._id
         underlyingInput.userId = auth.user._id
         underlyingInput.symbol = formData.symbol
-        // TODO use formData.type, but requires API changes in ENUM plus some logic for bull vs. bear spreads....
-        underlyingInput.type = formData.type
-        //underlyingInput.underlyingTrades = []
-        const underlyingTrade = {}
-        underlyingTrade.shares = parseInt(formData.shares)
-        underlyingTrade.price = formData.price
-        underlyingTrade.tradeDate = formData.tradeDate
-        underlyingTrade.userId = auth.user._id
-
-        //legs.legs.push(leg1)
-        //optionInput.spreads.push(legs)
-
+        underlyingInput.startDate = formData.startDate
+        const underlyingTradeInput = {}
+        underlyingTradeInput.type = formData.type
+        underlyingTradeInput.tradeDate = formData.tradeDate
+        underlyingTradeInput.shares = parseInt(formData.shares)
+        underlyingTradeInput.price = parseFloat(formData.price)
+        underlyingInput.underlyingTrades = underlyingTradeInput
         const input = { input: underlyingInput }
         return input
     }
@@ -66,8 +94,6 @@ const AddUnderlying = (props) => {
             .catch((e) => {
                 console.error(e)
             })
-
-        // TODO Validate and Process form data, pass into addUnderlyingMutation gql
     }
     const historyFilter = (array, query) => {
         return array.filter(trade =>
@@ -84,6 +110,7 @@ const AddUnderlying = (props) => {
             } else {
                 if(underlyingTrades) {
                     console.log(historyFilter(underlyingTrades, event.target.value))
+                    // TODO if match, setFormData({name:"_id",value:REALID!!!!})
                 }
                 setValidSymbol(true)
             }
@@ -93,7 +120,6 @@ const AddUnderlying = (props) => {
         if(!event.target.name.includes('Date')) event.preventDefault()
         if(event.target.name === 'tradeDate') setTradeDate(event.target.value)
         if(event.target.name === 'startDate') setStartDate(event.target.value)
-        if(event.target.name === 'endDate') setEndDate(event.target.value)
         setFormData({
             name: event.target.name,
             value: event.target.value,
@@ -106,28 +132,8 @@ const AddUnderlying = (props) => {
         setFormData({name:"startDate",value:startDate})
         setFormData({name:"shares",value:1})
         setFormData({name:"price",value:0})
+        setFormData({name:"_id",value:null})
     },[])
-
-/*
-    type UnderlyingHistory {
-        _id: ID
-        userId: ID
-        symbol: String
-        startDate: Date
-        endDate: Date
-        underlyingTrades: [UnderlyingTrade]
-    }
-    type UnderlyingTrade {
-        _id: ID
-        userId: ID
-        type: UnderlyingTradeType
-        date: String
-        shares: String
-        price: String
-    }
-
- */
-
 
     return (
         <div className={'flex w-100'}>
@@ -143,7 +149,6 @@ const AddUnderlying = (props) => {
                         </label>
                     </div>
                     {validSymbol &&
-                    <div className={'flex w-100'}>
                         <div className={'w-50'}>
                             <label className={'w-50'}>
                                 <p className={'required'}>Start Date</p>
@@ -156,14 +161,6 @@ const AddUnderlying = (props) => {
                                             })}/>
                             </label>
                         </div>
-                        <div className={'w-50'}>
-                            <label className={'w-50'}>
-                                <p className={'required'}>End Date</p>
-                                <DatePicker className={'dateInput'} selected={endDate}
-                                            onChange={date => handleChange({target: {name: 'endDate', value: date}})}/>
-                            </label>
-                        </div>
-                    </div>
                     }
                 </fieldset>
 

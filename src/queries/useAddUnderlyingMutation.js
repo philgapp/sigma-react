@@ -6,10 +6,9 @@ const addUnderlyingMutation = gql`
           _id
           symbol
           startDate
-          endDate
           underlyingTrades {
             type
-            date
+            tradeDate
             shares
             price
           }

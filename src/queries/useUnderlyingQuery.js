@@ -9,7 +9,7 @@ const underlyingQuery = gql`
       endDate
       underlyingTrades {
         type
-        date
+        tradeDate
         shares
         price
       }
