@@ -2,7 +2,7 @@
 const DateFromInt = (props) => {
     const rawDate = new Date(props)
     const year = rawDate.getFullYear()
-    const month = rawDate.getMonth()
+    const month = rawDate.getMonth() + 1
     const day = rawDate.getDate()
     // Unused for now but tested:
     // const isoDate = rawDate.toISOString()

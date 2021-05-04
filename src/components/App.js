@@ -1,48 +1,51 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
     BrowserRouter as Router,
     Switch,
     Route,
     useLocation,
-    Link
+    Redirect,
+    Link,
+    useHistory
 } from "react-router-dom";
 import '../styles/App.css';
+import useAuth, {
+    ProvideAuth,
+    AuthButton
+}  from '../helpers/useAuth'
+import Login from './Login'
 import Header from './Header';
 import Dashboard from './Dashboard';
 import Options from './Options';
+import Underlying from './Underlying';
 import AroiCalculator from './AroiCalculator';
 import AddItem from './AddItem'
 
 function App() {
-        return (
+    return (
+        <ProvideAuth>
             <Router>
                 <div className={"App flex flex-column"}>
                     <Header />
-                    <nav>
-                        <ul className={"flex list"}>
-                            <li className={'pa2'}>
-                                <Link to={'/'}>Dashboard </Link>
-                            </li>
-                            <li className={'pa2'}>
-                                <Link to={'/aroi'}>AROI Calc</Link>
-                            </li>
-                            <li className={'pa2'}>
-                                <Link to={'/options'}>Options</Link>
-                            </li>
-                        </ul>
-                    </nav>
-
-                    <AddItem />
 
                 <Switch>
-                    <Route path="/aroi">
+                    <PrivateRoute path="/aroi">
                         <AroiCalculator />
-                    </Route>
-                    <Route path="/options">
+                    </PrivateRoute>
+                    <PrivateRoute path="/options">
                         <Options />
+                    </PrivateRoute>
+                    <PrivateRoute path="/underlying">
+                        <Underlying />
+                    </PrivateRoute>
+                    <PrivateRoute path="/dashboard">
+                        <Dashboard />
+                    </PrivateRoute>
+                    <Route path="/login">
+                        <Login />
                     </Route>
                     <Route path="/">
-                        <Dashboard />
+                        <Login />
                     </Route>
                     <Route path="*">
                         <NoMatch />
@@ -51,11 +54,33 @@ function App() {
 
                 </div>
             </Router>
-        );
+        </ProvideAuth>
+    );
+}
+
+function PrivateRoute({ children, ...rest }) {
+    const auth = useAuth();
+    return (
+        <Route
+            {...rest}
+            render={({ location }) =>
+                auth.authenticated ? (
+                    children
+                ) : (
+                    <Redirect
+                        to={{
+                            pathname: "/login",
+                            state: { from: location }
+                        }}
+                    />
+                )
+            }
+        />
+    );
 }
 
 function NoMatch() {
-    let location = useLocation();
+    const location = useLocation();
 
     return (
         <div>

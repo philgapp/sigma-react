@@ -1,24 +1,7 @@
 import React, { useReducer, useState, useEffect } from 'react';
 import DatePicker from "react-datepicker";
-import { useQuery, useMutation, gql } from '@apollo/client';
-
-const addOptionMutation = gql`
-  mutation createOption($input: OptionInput!) {
-      createOption(input: $input) {
-        _id
-        symbol
-        type
-        spreads {
-            _id
-            legs {
-                _id
-                qty
-                isSpread
-            }
-        }
-      }
-  }
-`;
+import useAuth from '../helpers/useAuth'
+import useAddOptionMutation from "../queries/useAddOptionMutation";
 
 const AddOption = (props) => {
 
@@ -38,7 +21,8 @@ const AddOption = (props) => {
         return d
     }
 
-    const [runAddOption, {data}] = useMutation(addOptionMutation)
+    const auth = useAuth()
+    const runAddOption = useAddOptionMutation()
     const [serverResult, setServerResult] = useState(null);
     const [formData, setFormData] = useReducer(formReducer, {});
     const [isSpread, setIsSpread] = useState(false);
@@ -51,7 +35,7 @@ const AddOption = (props) => {
         // Handle Simple Single Options
         const optionInput = {}
         // TODO RESOLVE REAL USERS, hardcoded for initial development only
-        optionInput.userId = 'temp1'
+        optionInput.userId = auth.user._id
         optionInput.symbol = formData.symbol
         // TODO use formData.type, but requires API changes in ENUM plus some logic for bull vs. bear spreads....
         optionInput.type = "P"
@@ -81,12 +65,14 @@ const AddOption = (props) => {
     const handleSubmit = event => {
         event.preventDefault()
         const variables = processFormData()
-        console.log(variables)
 
         runAddOption({variables:variables})
             .then(res => {
-                console.log('runAddOption Mutation result:')
-                console.log(res.data)
+                const newPosition = res.data.createOption
+                props.refetch()
+                if(props.apiData) {
+                    // TODO fix updating the Apollo cache, and updating tables with new data, etc.
+                }
             })
             .catch((e) => {
                 console.error(e)
