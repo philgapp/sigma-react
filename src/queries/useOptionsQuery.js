@@ -1,8 +1,8 @@
 import {useQuery, gql} from "@apollo/client";
 
 const optionsQuery = gql`
-  query getOptionsbyUser($id: ID) {
-    getOptionsByUser(_id: $id) {
+  query getOptions($input: OptionQueryInput) {
+    getOptions(input: $input) {
       _id
       symbol
       spreads {

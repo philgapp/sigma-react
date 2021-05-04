@@ -1,45 +1,20 @@
 import React from 'react';
-import { useQuery, gql } from '@apollo/client';
+import useDashboardQuery from "../queries/useDashboardQuery";
 import DateFromInt from '../helpers/Date';
 import DashboardChart from './DashboardChart';
 import Table from './Table'
-
-const dashboardQuery = gql`
-  {
-    getDashboardForUser(_id: "temp1") {
-      balance
-      aroi
-      bookedIncome
-      chart {
-        cash
-        options
-        underlying
-      }
-      options {
-        numberOpen
-        potentialProfit
-        nextExpiry
-      }
-      underlying {
-       numberOpen
-       symbols {
-        symbol
-        qty
-        targetPrice
-       }
-      }
-    }
-  }
-`;
+import useAuth from "../helpers/useAuth";
 
 const Dashboard = (props) => {
-    const { data } = useQuery(dashboardQuery);
-    const apiData = data ?  data.getDashboardForUser : null
+    const auth = useAuth()
+    const dashboardQueryVars = { id: auth.user._id }
+    const { data, refetch } = useDashboardQuery( {variables: dashboardQueryVars } );
+    const apiData = data ?  data.getDashboard : null
     return (
         <div className={"appPage w-100"}>
             {apiData &&
                 <div>
-                    <div className={"flex"}>
+                    <div className={"dashPage flex"}>
                         <div className={"dashboardLeft w-50 pl4"}>
                             <p className={"dashboardLabel"} >
                                 Balance

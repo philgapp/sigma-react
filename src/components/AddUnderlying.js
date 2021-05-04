@@ -1,26 +1,11 @@
 import React, { useReducer, useState, useEffect } from 'react';
 import DatePicker from "react-datepicker";
-import { useQuery, useMutation, gql } from '@apollo/client';
-
-const addUnderlyingMutation = gql`
-  mutation createUnderlying($input: UnderlyingInput!) {
-      createUnderlying(input: $input) {
-        _id
-        symbol
-        type
-        spreads {
-            _id
-            legs {
-                _id
-                qty
-                isSpread
-            }
-        }
-      }
-  }
-`;
+import useAuth from '../helpers/useAuth'
+import useAddUnderlyingMutation from "../queries/useAddUnderlyingMutation";
 
 const AddUnderlying = (props) => {
+
+    const underlyingTrades = props.underlyingTrades
 
     const formReducer = (state, event) => {
         return {
@@ -38,43 +23,33 @@ const AddUnderlying = (props) => {
         return d
     }
 
-    const [runAddUnderlying, {data}] = useMutation(addUnderlyingMutation)
+    const auth = useAuth()
+    const runAddUnderlying = useAddUnderlyingMutation()
     const [serverResult, setServerResult] = useState(null);
     const [formData, setFormData] = useReducer(formReducer, {});
-    const [isSpread, setIsSpread] = useState(false);
+    const [validSymbol, setValidSymbol] = useState(false);
+    const [newSymbol, setNewSymbol] = useState(false);
+    const [tradeDate, setTradeDate] = useState(today);
     const [startDate, setStartDate] = useState(today);
-    const [endDate, setEndDate] = useState(today);
-    const [startDate2, setStartDate2] = useState(startDate);
-    const [endDate2, setEndDate2] = useState(endDate);
+    const [endDate, setEndDate] = useState(null);
 
     const processFormData = () => {
-        // Handle Simple Single Options
-        const optionInput = {}
-        // TODO RESOLVE REAL USERS, hardcoded for initial development only
-        optionInput.userId = 'temp1'
-        optionInput.symbol = formData.symbol
+        const underlyingInput = {}
+        underlyingInput.userId = auth.user._id
+        underlyingInput.symbol = formData.symbol
         // TODO use formData.type, but requires API changes in ENUM plus some logic for bull vs. bear spreads....
-        optionInput.type = "P"
-        optionInput.spreads = []
-        const legs = {legs: []}
-        const leg1 = {}
-        leg1.qty = parseInt(formData.quantity)
-        leg1.isSpread = isSpread
-        leg1.entryDate = formData.startDate
-        leg1.expirationDate = formData.endDate
-        leg1.strike = parseFloat(formData.strike)
-        leg1.underlyingEntryPrice = parseFloat(formData.underlyingEntryPrice)
-        leg1.initialPremium = parseFloat(formData.premium)
-        leg1.notes = formData.notes
-        legs.legs.push(leg1)
-        optionInput.spreads.push(legs)
+        underlyingInput.type = formData.type
+        //underlyingInput.underlyingTrades = []
+        const underlyingTrade = {}
+        underlyingTrade.shares = parseInt(formData.shares)
+        underlyingTrade.price = formData.price
+        underlyingTrade.tradeDate = formData.tradeDate
+        underlyingTrade.userId = auth.user._id
 
+        //legs.legs.push(leg1)
+        //optionInput.spreads.push(legs)
 
-        // Handle multiple quantity
-        // Validation + Errors
-        // HANDLE SPREADS + LEGS
-        // Return clean input data for runAddOption mutation! (to write to API/DB)
-        const input = {input: optionInput}
+        const input = { input: underlyingInput }
         return input
     }
 
@@ -83,7 +58,7 @@ const AddUnderlying = (props) => {
         const variables = processFormData()
         console.log(variables)
 
-        runAddUnderlying({variables:variables})
+        runAddUnderlying({ variables:variables })
             .then(res => {
                 console.log('runAddUnderlying Mutation result:')
                 console.log(res.data)
@@ -92,18 +67,33 @@ const AddUnderlying = (props) => {
                 console.error(e)
             })
 
-        // TODO Validate and Process form data, pass into addOptionMutation gql
+        // TODO Validate and Process form data, pass into addUnderlyingMutation gql
+    }
+    const historyFilter = (array, query) => {
+        return array.filter(trade =>
+            trade.symbol.toUpperCase().indexOf(query) !== -1
+            &&
+            !trade.endDate
+        )
     }
 
     const handleChange = event => {
+        if(event.target.name === 'symbol') {
+            if(event.target.value.length < 1) {
+                setValidSymbol(false)
+            } else {
+                if(underlyingTrades) {
+                    console.log(historyFilter(underlyingTrades, event.target.value))
+                }
+                setValidSymbol(true)
+            }
+            // Check against open underlying positions
+            // Set valid symbol = setValidSymbol(true)
+        }
         if(!event.target.name.includes('Date')) event.preventDefault()
+        if(event.target.name === 'tradeDate') setTradeDate(event.target.value)
         if(event.target.name === 'startDate') setStartDate(event.target.value)
         if(event.target.name === 'endDate') setEndDate(event.target.value)
-        if(event.target.name === "type" && event.target.value.includes("Spread")) {
-            setIsSpread(true)
-        } else if (event.target.name === "type" && !event.target.value.includes("Spread")) {
-            setIsSpread(false)
-        }
         setFormData({
             name: event.target.name,
             value: event.target.value,
@@ -112,18 +102,39 @@ const AddUnderlying = (props) => {
 
     // Set formData defaults on initial load
     useEffect(() => {
-        setFormData({name:"type",value:'Put'})
+        setFormData({name:"type",value:'Buy'})
         setFormData({name:"startDate",value:startDate})
-        setFormData({name:"quantity",value:1})
-        setFormData({name:"entryCost",value:0})
+        setFormData({name:"shares",value:1})
+        setFormData({name:"price",value:0})
     },[])
+
+/*
+    type UnderlyingHistory {
+        _id: ID
+        userId: ID
+        symbol: String
+        startDate: Date
+        endDate: Date
+        underlyingTrades: [UnderlyingTrade]
+    }
+    type UnderlyingTrade {
+        _id: ID
+        userId: ID
+        type: UnderlyingTradeType
+        date: String
+        shares: String
+        price: String
+    }
+
+ */
+
 
     return (
         <div className={'flex w-100'}>
             {serverResult &&
                 <span>{serverResult}</span>
             }
-            <form onSubmit={(event) => handleSubmit(event)} className={'pl3'}>
+            <form onSubmit={(event) => handleSubmit(event)} className={'pl3 w-100'}>
                 <fieldset>
                     <div className={'w-50'}>
                         <label>
@@ -131,178 +142,71 @@ const AddUnderlying = (props) => {
                             <input type={'text'} placeholder={'SPY'} name={'symbol'} onChange={handleChange} />
                         </label>
                     </div>
+                    {validSymbol &&
+                    <div className={'flex w-100'}>
+                        <div className={'w-50'}>
+                            <label className={'w-50'}>
+                                <p className={'required'}>Start Date</p>
+                                <DatePicker className={'dateInput'} selected={startDate}
+                                            onChange={date => handleChange({
+                                                target: {
+                                                    name: 'startDate',
+                                                    value: date
+                                                }
+                                            })}/>
+                            </label>
+                        </div>
+                        <div className={'w-50'}>
+                            <label className={'w-50'}>
+                                <p className={'required'}>End Date</p>
+                                <DatePicker className={'dateInput'} selected={endDate}
+                                            onChange={date => handleChange({target: {name: 'endDate', value: date}})}/>
+                            </label>
+                        </div>
+                    </div>
+                    }
+                </fieldset>
+
+                {validSymbol &&
+                <fieldset>
                     <div className={'w-50'}>
                         <label>
-                            <p className={'required'}>Option Type</p>
+                            <p className={'required'}>Trade Type</p>
                             <select value={formData.type} name={'type'} onChange={handleChange}>
-                                <option value={"Put"}>Put</option>
-                                <option value={"Call"}>Call</option>
-                                <option value={"Put Spread"}>Put Spread</option>
-                                <option value={"Call Spread"}>Call Spread</option>
+                                <option value={"BUY"}>Buy</option>
+                                <option value={"SELL"}>Sell</option>
+                                <option value={"ASSIGNED"}>Assigned</option>
+                                <option value={"CALLED"}>Called</option>
+                                <option value={"DIVIDEND"}>Dividend</option>
                             </select>
                         </label>
                     </div>
+                    <div className={'w-50'}>
+                        <label className={'w-50'}>
+                            <p className={'required'}>Trade Date</p>
+                            <DatePicker className={'dateInput'} selected={tradeDate}
+                                        onChange={date => handleChange({target: {name: 'tradeDate', value: date}})}/>
+                        </label>
+                    </div>
+                    <div className={'w-50'}>
+                        <label>
+                            <p className={'required'}>Number of Shares</p>
+                            <input className={'numberInput'} name={'shares'} value={formData.shares} type={"number"}
+                                   onChange={handleChange}/>
+                        </label>
+                    </div>
+                    <div className={'w-50'}>
+                        <label>
+                            <p className={'required'}>Price per Share</p>
+                            <input className={'numberInput'} name={'price'} value={formData.price} type={"number"}
+                                   step={'0.01'}
+                                   onChange={handleChange}/>
+                        </label>
+                    </div>
+                    <button type={'submit'} className={'mt3 pa3 add'}>Add Underlying Trade</button>
                 </fieldset>
-
-                    {isSpread &&
-                        <>
-                        Leg 1
-                        </>
-                    }
-                <fieldset>
-                    <div className={'w-50'}>
-                        <label>
-                            <p className={'required'}>Quantity</p>
-                            <input className={'numberInput'} name={'quantity'} value={formData.quantity} type={"number"}
-                                   onChange={handleChange}/>
-                        </label>
-                    </div>
-                    <div className={'w-50'}>
-                        <label>
-                            <p className={'required'}>Cost</p>
-                            <input className={'numberInput'} name={'entryCost'} value={formData.entryCost} type={"number"} step={'0.01'}
-                                   onChange={handleChange}/>
-                        </label>
-                    </div>
-                    <div className={'w-50'}>
-                        <label>
-                            <p className={'required'}>Underlying Price</p>
-                            <input className={'numberInput'} name={'underlyingEntryPrice'} type={"number"} step={'0.01'}
-                                   onChange={handleChange}/>
-                        </label>
-                    </div>
-                    <div className={'flex w-100'}>
-                        <div className={'w-50'}>
-                            <label className={'w-50'}>
-                                <p className={'required'}>Entry Date</p>
-                                <DatePicker className={'dateInput'} selected={startDate} onChange={date => handleChange({target: {name:'startDate',value:date}})} />
-                            </label>
-                        </div>
-                        <div className={'w-50'}>
-                            <label className={'w-50'}>
-                                <p className={'required'}>Expiration Date</p>
-                                <DatePicker className={'dateInput'} selected={endDate} onChange={date => handleChange({target: {name:'endDate',value:date}})} />
-                            </label>
-                        </div>
-                    </div>
-                    <div className={'flex w-100'}>
-                        <div className={'w-50'}>
-                            <label>
-                                <p className={'required'}>Strike Price</p>
-                                $<input className={'numberInput'} name={'strike'} type={"number"} step=".01" placeholder={"Strike"} onChange={handleChange} />
-                            </label>
-                        </div>
-                        <div className={'w-50'}>
-                            <label>
-                                <p className={'required'}>Premium Per Share</p>
-                                $<input className={'numberInput'} name={'premium'} type={"number"} step=".01" placeholder={"Premium"} onChange={handleChange} />
-                            </label>
-                        </div>
-                    </div>
-                    </fieldset>
-                    {isSpread &&
-                    <>
-                        Leg 2
-                        <fieldset>
-                        <div className={'w-50'}>
-                            <label>
-                                <p className={'required'}>Quantity</p>
-                                <input className={'numberInput'} name={'quantity2'} type={"number"}
-                                       onChange={handleChange}/>
-                            </label>
-                        </div>
-                        <div className={'w-50'}>
-                            <label>
-                                <p className={'required'}>Cost</p>
-                                <input className={'numberInput'} name={'entryCost2'} type={"number"} step={'0.01'}
-                                       onChange={handleChange}/>
-                            </label>
-                        </div>
-                        <div className={'w-50'}>
-                            <label>
-                                <p className={'required'}>Underlying Price</p>
-                                <input className={'numberInput'} name={'underlyingEntryPrice2'} type={"number"} step={'0.01'}
-                                       onChange={handleChange}/>
-                            </label>
-                        </div>
-                        <div className={'flex w-100'}>
-                            <div className={'w-50'}>
-                                <label className={'w-50'}>
-                                    <p className={'required'}>Entry Date</p>
-                                    <DatePicker className={'dateInput'} selected={startDate2}
-                                                onChange={date => handleChange({
-                                                    target: {
-                                                        name: 'startDate2',
-                                                        value: date
-                                                    }
-                                                })}/>
-                                </label>
-                            </div>
-                            <div className={'w-50'}>
-                                <label className={'w-50'}>
-                                    <p className={'required'}>Expiration Date</p>
-                                    <DatePicker className={'dateInput'} selected={endDate2}
-                                                onChange={date => handleChange({
-                                                    target: {
-                                                        name: 'endDate2',
-                                                        value: date
-                                                    }
-                                                })}/>
-                                </label>
-                            </div>
-                        </div>
-                        <div className={'flex w-100'}>
-                            <div className={'w-50'}>
-                                <label>
-                                    <p className={'required'}>Strike Price</p>
-                                    $<input className={'numberInput'} name={'strike2'} type={"number"} step=".01"
-                                            placeholder={"Strike"} onChange={handleChange}/>
-                                </label>
-                            </div>
-                            <div className={'w-50'}>
-                                <label>
-                                    <p className={'required'}>Premium Per Share</p>
-                                    $<input className={'numberInput'} name={'premium2'} type={"number"} step=".01"
-                                            placeholder={"Premium"} onChange={handleChange}/>
-                                </label>
-                            </div>
-                        </div>
-                        </fieldset>
-                    </>
-                    }
-                <fieldset>
-                    <div className={'w-50'}>
-                        <label>
-                            <p>Notes</p>
-                            <input type={'textarea'} name={'notes'} onChange={handleChange} />
-                        </label>
-                    </div>
-
-                    <button type={'submit'} className={'mt3 pa3 add'}>Add Underlying</button>
-                </fieldset>
+                }
             </form>
-
-            {/*
-                this.state.showMenu
-                    ? (
-                        <div className={'addItemMenu'}>
-                            <ul
-                                className="menu list"
-                                ref={(element) => {
-                                    this.dropdownMenu = element;
-                                }}
-                            >
-                                <li>Add an Option Trade</li>
-                                <li>Add an Underlying Trade</li>
-                                <li>Add a Banking Transaction</li>
-                            </ul>
-                        </div>
-                    )
-                    : (
-                        null
-                    )
-            */
-            }
         </div>
     );
 }

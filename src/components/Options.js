@@ -1,17 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useOptionsQuery from "../queries/useOptionsQuery";
 import AddOption from './AddOption'
 import Table from './Table'
 import useAuth from '../helpers/useAuth'
+import DateFromInt from "../helpers/Date";
 
 const Options = (props) => {
 
     const auth = useAuth()
-    const { data, refetch } = useOptionsQuery({variables: {id: auth.user._id} });
-    const apiData = data ? data.getOptionsByUser : null
+    const userId = auth.user._id
+    const [optionQueryVars, setOptionQueryVars] = useState( { input: { userId: userId, open: true } } )
+    const { data, refetch } = useOptionsQuery({variables: optionQueryVars });
+    const [optionTableData,setOptionTableData] = useState([])
+    const apiData = data ? data.getOptions : null
 
     const [showOptionForm, setShowOptionForm] = useState(false);
     const [optionFormButtonText, setOptionFormButtonText] = useState("Add an Option Trade");
+
+    const formatOptionDataForTable = (data) => {
+        const resultData = []
+        // Basic options data only!
+        // TODO handle various complex option types
+        data.map(option => {
+            const arrayItem = {}
+            arrayItem._id = option._id
+            arrayItem.symbol = option.symbol
+            arrayItem.qty = option.spreads[0].legs[0].qty
+            arrayItem.entryDate = DateFromInt(option.spreads[0].legs[0].entryDate)
+            arrayItem.strike = option.spreads[0].legs[0].strike
+            arrayItem.expirationDate = DateFromInt(option.spreads[0].legs[0].expirationDate)
+            arrayItem.initialAroi = option.spreads[0].legs[0].initialAroi
+            arrayItem.notes = option.spreads[0].legs[0].notes
+            resultData.push(arrayItem)
+        })
+        setOptionTableData(resultData)
+    }
+
+    useEffect(() => {
+        if(typeof(data) != "undefined") {
+            formatOptionDataForTable(data.getOptions)
+        }
+    },[data])
 
     const showForm = (props) => {
         if (props === false) {
@@ -35,9 +64,9 @@ const Options = (props) => {
             }
 
             <div>
-                {apiData &&
+                {(optionTableData.length > 1) &&
                     <>
-                        <Table data={apiData} tableType={"allOptions"} />
+                        <Table tableType={"allOptions"} data={optionTableData} refetch={refetch} setOptionQueryVars={setOptionQueryVars} userId={userId} />
                     </>
                 }
             </div>
