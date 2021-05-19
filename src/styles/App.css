@@ -7,6 +7,10 @@ p {
   padding: 4px 0;
 }
 
+.upperCase {
+  text-transform: uppercase;
+}
+
 .f3 {
   font-weight: bold;
   color: #C13C37;

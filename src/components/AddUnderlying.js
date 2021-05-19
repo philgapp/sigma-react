@@ -32,44 +32,11 @@ const AddUnderlying = (props) => {
     const [tradeDate, setTradeDate] = useState(today);
     const [startDate, setStartDate] = useState(today);
 
-    /*
-    type UnderlyingHistory {
-        _id: ID
-        userId: ID
-        symbol: String
-        startDate: Date
-        endDate: Date
-        underlyingTrades: [UnderlyingTrade]
-    }
-    type UnderlyingTrade {
-        _id: ID
-        type: UnderlyingTradeType
-        date: String
-        shares: String
-        price: String
-    }
-
-    input UnderlyingInput {
-        userId: ID
-        symbol: String
-        startDate: Date
-        endDate: Date
-        underlyingTrades: UnderlyingTradeInput
-      }
-      input UnderlyingTradeInput {
-        type: UnderlyingTradeType
-        date: String
-        shares: String
-        price: String
-      }
-
- */
-
     const processFormData = () => {
         const underlyingInput = {}
         underlyingInput._id = formData._id
         underlyingInput.userId = auth.user._id
-        underlyingInput.symbol = formData.symbol
+        underlyingInput.symbol = formData.symbol.toUpperCase()
         underlyingInput.startDate = formData.startDate
         const underlyingTradeInput = {}
         underlyingTradeInput.type = formData.type
@@ -81,41 +48,54 @@ const AddUnderlying = (props) => {
         return input
     }
 
+    const forceSymbolRefresh = () => {
+        const elem = document.getElementById("symbol")
+        const event = new Event('input', { bubbles: true })
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+        nativeInputValueSetter.call(elem, "");
+        const trigger = elem.dispatchEvent(event)
+        nativeInputValueSetter.call(elem, formData.symbol);
+        const trigger2 = elem.dispatchEvent(event)
+    }
+
     const handleSubmit = event => {
         event.preventDefault()
         const variables = processFormData()
-        console.log(variables)
+        //console.log(variables)
 
         runAddUnderlying({ variables:variables })
             .then(res => {
-                console.log('runAddUnderlying Mutation result:')
-                console.log(res.data)
+                props.refetch()
+                forceSymbolRefresh()
             })
             .catch((e) => {
                 console.error(e)
             })
     }
+
     const historyFilter = (array, query) => {
-        return array.filter(trade =>
-            trade.symbol.toUpperCase().indexOf(query) !== -1
-            &&
-            !trade.endDate
-        )
+        if((array.length < 1) || (query.length < 1)) return
+        if(array && query.length > 0) {
+            return array.filter(trade =>
+                trade.symbol.toUpperCase().indexOf(query) !== -1
+                &&
+                !trade.endDate
+            )
+        }
     }
 
     const handleChange = event => {
         if(event.target.name === 'symbol') {
             if(event.target.value.length < 1) {
                 setValidSymbol(false)
+                return
             } else {
-                if(underlyingTrades) {
-                    console.log(historyFilter(underlyingTrades, event.target.value))
-                    // TODO if match, setFormData({name:"_id",value:REALID!!!!})
+                if(underlyingTrades.length) {
+                    const openPositions = historyFilter(underlyingTrades, event.target.value.toUpperCase())
+                    openPositions.length ? setFormData({name:"_id",value:openPositions[0]._id}) : setFormData({name:"_id",value:null})
                 }
                 setValidSymbol(true)
             }
-            // Check against open underlying positions
-            // Set valid symbol = setValidSymbol(true)
         }
         if(!event.target.name.includes('Date')) event.preventDefault()
         if(event.target.name === 'tradeDate') setTradeDate(event.target.value)
@@ -130,6 +110,7 @@ const AddUnderlying = (props) => {
     useEffect(() => {
         setFormData({name:"type",value:'Buy'})
         setFormData({name:"startDate",value:startDate})
+        setFormData({name:"tradeDate",value:tradeDate})
         setFormData({name:"shares",value:1})
         setFormData({name:"price",value:0})
         setFormData({name:"_id",value:null})
@@ -145,7 +126,7 @@ const AddUnderlying = (props) => {
                     <div className={'w-50'}>
                         <label>
                             <p className={'required'}>Symbol / Ticker</p>
-                            <input type={'text'} placeholder={'SPY'} name={'symbol'} onChange={handleChange} />
+                            <input type={'text'} className={"upperCase"} placeholder={'SPY'} id={"symbol"} name={'symbol'} onChange={handleChange} />
                         </label>
                     </div>
                     {validSymbol &&

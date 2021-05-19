@@ -222,6 +222,88 @@ const Table = (props) => {
             }
 
 
+            {tableType === "allUnderlying" &&
+            <>
+                <table>
+                    <caption className={'f4 darkRed bold pb3'}><button onClick={() => toggleOptionTypeButton(switchOptionTypeButton)}>{switchOptionTypeButton}</button> Underlying Positions</caption>
+                    <thead>
+                    <tr>
+                        <th>
+                            <button
+                                type="button"
+                                onClick={() => requestSort('symbol')}
+                                className={getClassNamesFor('symbol')}
+                            >
+                                Symbol
+                            </button>
+                        </th>
+                        <th>
+                            <button
+                                type="button"
+                                onClick={() => requestSort('currentShares')}
+                                className={getClassNamesFor('currentShares')}
+                            >
+                                Shares
+                            </button>
+                        </th>
+                        <th>
+                            <button
+                                type="button"
+                                onClick={() => requestSort('startDate')}
+                                className={getClassNamesFor('startDate')}
+                            >
+                                Start Date
+                            </button>
+                        </th>
+                        <th>
+                            <button
+                                type="button"
+                                onClick={() => requestSort('rawCostBasis')}
+                                className={getClassNamesFor('rawCostBasis')}
+                            >
+                                Raw Cost Basis
+                            </button>
+                        </th>
+                        <th>
+                            <button
+                                type="button"
+                                onClick={() => requestSort('targetPriceWeek')}
+                                className={getClassNamesFor('targetPriceWeek')}
+                            >
+                                Target Price (1 week)
+                            </button>
+                        </th>
+                        <th>
+                            <button
+                                type="button"
+                                onClick={() => requestSort('targetPriceMonth')}
+                                className={getClassNamesFor('targetPriceMonth')}
+                            >
+                                Target Price (1 month)
+                            </button>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {items.map( (item) => (
+                        <ContextMenuTrigger renderTag={"tr"} name={item._id} optionId={item._id} key={item._id} collect={collect} id={"SIMPLE"}>
+                            <td>{item.symbol}</td>
+                            <td>{item.currentShares}</td>
+                            <td>{DateFromInt(item.startDate)}</td>
+                            <td>${item.rawCostBasis}</td>
+                            <td>${item.targetPriceWeek}</td>
+                            <td>${item.targetPriceMonth}</td>
+                        </ContextMenuTrigger>
+                    ))}
+                    </tbody>
+                </table>
+
+                <CustomContextMenu type={"option"} actions={null} />
+            </>
+            }
+
+
         </>
     );
 };

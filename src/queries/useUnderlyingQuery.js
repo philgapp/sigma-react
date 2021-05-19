@@ -1,4 +1,4 @@
-import {useQuery, gql} from "@apollo/client";
+import { useQuery, gql } from "@apollo/client";
 
 const underlyingQuery = gql`
   query getUnderlying($input: UnderlyingQueryInput) {
@@ -7,6 +7,11 @@ const underlyingQuery = gql`
       symbol
       startDate
       endDate
+      currentShares
+      rawCostBasis
+      adjustedCostBasis
+      targetPriceWeek
+      targetPriceMonth
       underlyingTrades {
         type
         tradeDate

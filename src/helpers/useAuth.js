@@ -73,6 +73,7 @@ const useAuth = () => {
 const useProvideAuth = () => {
     const [user, setUser] = useState({});
     const [authenticated, setAuthenticated] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(null);
     const [sessionID, setSessionID] = useState(null);
     const getSession = useImperativeQuery(sessionQuery);
     const getLogin = useImperativeQuery(loginQuery);
@@ -166,6 +167,11 @@ const useProvideAuth = () => {
             upsertUser({variables: input })
                 .then(res => {
                     setUser(res.data.upsertUser);
+                    // Super basic, Google-only admin user
+                    // @TODO better userTypes - on users in DB, all sign-in methods, etc.
+                    if(user.email === "philgapp@gmail.com") {
+                        setIsAdmin(true)
+                    }
                     setRedirect("/dashboard")
                 })
                 .catch(e => {
@@ -219,6 +225,7 @@ const useProvideAuth = () => {
         user,
         sessionID,
         authenticated,
+        isAdmin,
         signup,
         signin,
         googleSignin,

@@ -70,9 +70,6 @@ const AddOption = (props) => {
             .then(res => {
                 const newPosition = res.data.createOption
                 props.refetch()
-                if(props.apiData) {
-                    // TODO fix updating the Apollo cache, and updating tables with new data, etc.
-                }
             })
             .catch((e) => {
                 console.error(e)
@@ -98,23 +95,22 @@ const AddOption = (props) => {
 
     // Set formData defaults on initial load
     useEffect(() => {
-        setFormData({name:"type",value:'Put'})
-        setFormData({name:"startDate",value:startDate})
-        setFormData({name:"quantity",value:1})
-        setFormData({name:"entryCost",value:0})
+        setFormData( { name:"type", value:'Put' } )
+        setFormData( { name:"startDate", value:startDate } )
+        setFormData( { name:"quantity", value:1 } )
+        setFormData( { name:"entryCost", value:0 } )
+        setServerResult( true )
     },[])
 
     return (
         <div className={'flex w-100'}>
             {serverResult &&
-                <span>{serverResult}</span>
-            }
             <form onSubmit={(event) => handleSubmit(event)} className={'pl3'}>
                 <fieldset>
                     <div className={'w-50'}>
                         <label>
                             <p className={'required'}>Symbol / Ticker</p>
-                            <input type={'text'} placeholder={'SPY'} name={'symbol'} onChange={handleChange} />
+                            <input type={'text'} placeholder={'SPY'} name={'symbol'} onChange={handleChange}/>
                         </label>
                     </div>
                     <div className={'w-50'}>
@@ -130,11 +126,11 @@ const AddOption = (props) => {
                     </div>
                 </fieldset>
 
-                    {isSpread &&
-                        <>
-                        Leg 1
-                        </>
-                    }
+                {isSpread &&
+                <>
+                    Leg 1
+                </>
+                }
                 <fieldset>
                     <div className={'w-50'}>
                         <label>
@@ -146,7 +142,8 @@ const AddOption = (props) => {
                     <div className={'w-50'}>
                         <label>
                             <p className={'required'}>Cost</p>
-                            <input className={'numberInput'} name={'entryCost'} value={formData.entryCost} type={"number"} step={'0.01'}
+                            <input className={'numberInput'} name={'entryCost'} value={formData.entryCost}
+                                   type={"number"} step={'0.01'}
                                    onChange={handleChange}/>
                         </label>
                     </div>
@@ -161,13 +158,20 @@ const AddOption = (props) => {
                         <div className={'w-50'}>
                             <label className={'w-50'}>
                                 <p className={'required'}>Entry Date</p>
-                                <DatePicker className={'dateInput'} selected={startDate} onChange={date => handleChange({target: {name:'startDate',value:date}})} />
+                                <DatePicker className={'dateInput'} selected={startDate}
+                                            onChange={date => handleChange({
+                                                target: {
+                                                    name: 'startDate',
+                                                    value: date
+                                                }
+                                            })}/>
                             </label>
                         </div>
                         <div className={'w-50'}>
                             <label className={'w-50'}>
                                 <p className={'required'}>Expiration Date</p>
-                                <DatePicker className={'dateInput'} selected={endDate} onChange={date => handleChange({target: {name:'endDate',value:date}})} />
+                                <DatePicker className={'dateInput'} selected={endDate}
+                                            onChange={date => handleChange({target: {name: 'endDate', value: date}})}/>
                             </label>
                         </div>
                     </div>
@@ -175,21 +179,23 @@ const AddOption = (props) => {
                         <div className={'w-50'}>
                             <label>
                                 <p className={'required'}>Strike Price</p>
-                                $<input className={'numberInput'} name={'strike'} type={"number"} step=".01" placeholder={"Strike"} onChange={handleChange} />
+                                $<input className={'numberInput'} name={'strike'} type={"number"} step=".01"
+                                        placeholder={"Strike"} onChange={handleChange}/>
                             </label>
                         </div>
                         <div className={'w-50'}>
                             <label>
                                 <p className={'required'}>Premium Per Share</p>
-                                $<input className={'numberInput'} name={'premium'} type={"number"} step=".01" placeholder={"Premium"} onChange={handleChange} />
+                                $<input className={'numberInput'} name={'premium'} type={"number"} step=".01"
+                                        placeholder={"Premium"} onChange={handleChange}/>
                             </label>
                         </div>
                     </div>
-                    </fieldset>
-                    {isSpread &&
-                    <>
-                        Leg 2
-                        <fieldset>
+                </fieldset>
+                {isSpread &&
+                <>
+                    Leg 2
+                    <fieldset>
                         <div className={'w-50'}>
                             <label>
                                 <p className={'required'}>Quantity</p>
@@ -207,7 +213,8 @@ const AddOption = (props) => {
                         <div className={'w-50'}>
                             <label>
                                 <p className={'required'}>Underlying Price</p>
-                                <input className={'numberInput'} name={'underlyingEntryPrice2'} type={"number"} step={'0.01'}
+                                <input className={'numberInput'} name={'underlyingEntryPrice2'} type={"number"}
+                                       step={'0.01'}
                                        onChange={handleChange}/>
                             </label>
                         </div>
@@ -253,20 +260,21 @@ const AddOption = (props) => {
                                 </label>
                             </div>
                         </div>
-                        </fieldset>
-                    </>
-                    }
+                    </fieldset>
+                </>
+                }
                 <fieldset>
                     <div className={'w-50'}>
                         <label>
                             <p>Notes</p>
-                            <input type={'textarea'} name={'notes'} onChange={handleChange} />
+                            <input type={'textarea'} name={'notes'} onChange={handleChange}/>
                         </label>
                     </div>
 
                     <button type={'submit'} className={'mt3 pa3 add'}>Add Option</button>
                 </fieldset>
             </form>
+            }
 
             {/*
                 this.state.showMenu

@@ -47,8 +47,13 @@ const Header = (props) => {
                 {auth.authenticated &&
                 <nav className={"mt2 mb2"}>
                     <ul className={"flex list"}>
+                        {auth.admin &&
                         <li className={'pa2 dashboardIcon'}>
-                            <Link to={'/dashboard'}>Dashboard </Link>
+                            <Link to={'/members'}>Members</Link>
+                        </li>
+                        }
+                        <li className={'pa2 dashboardIcon'}>
+                            <Link to={'/dashboard'}>Dashboard</Link>
                         </li>
                         <li className={'pa2 optionIcon'}>
                             <Link to={'/options'}>Options</Link>

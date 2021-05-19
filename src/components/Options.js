@@ -10,9 +10,8 @@ const Options = (props) => {
     const auth = useAuth()
     const userId = auth.user._id
     const [optionQueryVars, setOptionQueryVars] = useState( { input: { userId: userId, open: true } } )
-    const { data, refetch } = useOptionsQuery({variables: optionQueryVars });
-    const [optionTableData,setOptionTableData] = useState([])
-    const apiData = data ? data.getOptions : null
+    const { data, refetch } = useOptionsQuery({ variables: optionQueryVars });
+    const [optionTableData, setOptionTableData] = useState([])
 
     const [showOptionForm, setShowOptionForm] = useState(false);
     const [optionFormButtonText, setOptionFormButtonText] = useState("Add an Option Trade");
@@ -64,7 +63,7 @@ const Options = (props) => {
             }
 
             <div>
-                {(optionTableData.length > 1) &&
+                {(optionTableData.length > 0) &&
                     <>
                         <Table tableType={"allOptions"} data={optionTableData} refetch={refetch} setOptionQueryVars={setOptionQueryVars} userId={userId} />
                     </>
