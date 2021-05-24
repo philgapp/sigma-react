@@ -20,7 +20,7 @@ const Underlying = (props) => {
 
     const formatDataForTable = (data) => {
         const resultData = []
-        data.map(trade => {
+        data.forEach(trade => {
             resultData.push(trade)
         })
         setOptionTableData(resultData)
@@ -62,6 +62,7 @@ const Underlying = (props) => {
                     </>
                 }
             </div>
+
         </div>
     );
 };

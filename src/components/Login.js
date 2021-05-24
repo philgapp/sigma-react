@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation, gql } from '@apollo/client';
+import React, { useState } from 'react';
+import { useMutation, gql } from '@apollo/client';
 import useAuth from '../helpers/useAuth'
 import GoogleLogin from 'react-google-login';
 import { Redirect } from "react-router-dom";
@@ -22,17 +22,16 @@ const Login = props => {
     const [lastName, setLastName] = useState();
     const [username, setUserName] = useState();
     const [password, setPassword] = useState();
-    const [authType, setAuthType] = useState("LOCAL");
+    const [authType, setAuthType] = useState("Local");
     const [signupForm, setSignupForm] = useState(false)
     const [redirect, setRedirect] = useState(null);
-    const [runGoogleAuthMutation, {data}] = useMutation(processGoogleMutation)
+    const [runGoogleAuthMutation] = useMutation(processGoogleMutation)
     // TODO ENV VAR!!!
     const googleClientID = "536166203532-t30d4mei41eujd50df8e5brk4n0o8rn3.apps.googleusercontent.com"
-    const googleClientSecret = "-Z3n4HIqUrNbPiUYwaqQZwAd"
 
     const toggleSignupForm = props => {
         props.e.preventDefault()
-        props.signupForm == false ? setSignupForm(true) : setSignupForm(false)
+        props.signupForm === false ? setSignupForm(true) : setSignupForm(false)
     }
 
     const handleLogin = event => {
@@ -51,11 +50,11 @@ const Login = props => {
                 token: props.tokenId
             }
         }
-        runGoogleAuthMutation({variables:variables})
+        runGoogleAuthMutation({ variables: variables })
             .then(res => {
                 if(res.data.processGoogleAuth) {
-                    const user = res.data.processGoogleAuth
-                    auth.googleSignin(user, setRedirect)
+                    const googleUser = res.data.processGoogleAuth
+                    auth.googleSignin(googleUser, setRedirect)
                 }
             })
             .catch((e) => {
@@ -76,7 +75,7 @@ const Login = props => {
 
     return(
         <>
-        {auth.authenticated == false &&
+        {auth.authenticated === false &&
             <div className="loginForm">
                 <h2 className={'f3 pl3'}>Please Sign In</h2>
                 <GoogleLogin
@@ -122,7 +121,7 @@ const Login = props => {
                             <p>Password</p>
                             <input type="password" onChange={e => setPassword(e.target.value)}/>
                         </label>
-                        <input type={"hidden"} name={"authType"} value={"LOCAL"} />
+                        <input type={"hidden"} name={"authType"} value={"Local"} />
                         <div>
                             <button type="submit" className={'pa2 mt3'}>Sign Up</button>
                         </div>

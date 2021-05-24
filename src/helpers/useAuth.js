@@ -1,6 +1,6 @@
 import React, {createContext, useContext, useState, useEffect} from 'react';
 import { useQuery, useLazyQuery, useMutation, gql } from '@apollo/client';
-import {useHistory, redirect, Redirect} from "react-router-dom";
+import {useHistory } from "react-router-dom";
 
 const useImperativeQuery = (query) => {
     const { refetch } = useQuery(query, { skip: true });
@@ -79,7 +79,7 @@ const useProvideAuth = () => {
     const getLogin = useImperativeQuery(loginQuery);
     const getUser = useImperativeQuery(sessionUserQuery,{ errorPolicy: 'all' });
     const [destroySession] = useLazyQuery(destroySessionQuery);
-    const [upsertUser, {data}] = useMutation(upsertUserMutation)
+    const [upsertUser] = useMutation(upsertUserMutation)
 
     const isAuthenticated = async (variables) => {
         const { data, error } = await getUser(variables)
@@ -143,7 +143,7 @@ const useProvideAuth = () => {
         }
     };
 
-    const googleSignin = (user, setRedirect) => {
+    const googleSignin = (googleUser, setRedirect) => {
         // First, always make sure the sessionID state is set by getting the sessionID from the API
         /*
         if(!sessionID) {
@@ -154,41 +154,25 @@ const useProvideAuth = () => {
         }
 
          */
-        if(user) {
-            const input = {
-                input: {
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    email: user.email,
-                    authType: user.authType,
-                    // password: user.password
-                }
+        if(googleUser) {
+            setUser(googleUser);
+            if(googleUser.email === "philgapp@gmail.com") {
+                setIsAdmin(true)
             }
-            upsertUser({variables: input })
-                .then(res => {
-                    setUser(res.data.upsertUser);
-                    // Super basic, Google-only admin user
-                    // @TODO better userTypes - on users in DB, all sign-in methods, etc.
-                    if(user.email === "philgapp@gmail.com") {
-                        setIsAdmin(true)
-                    }
-                    setRedirect("/dashboard")
-                })
-                .catch(e => {
-                    console.error(e)
-                })
+            setRedirect("/dashboard")
         } else {
             console.error('Google login error.')
         }
     };
 
     const Signout = props => {
-        const res = destroySession({
+        destroySession({
             variables: {
                 session: sessionID
             }
         })
         setAuthenticated(false)
+        setIsAdmin(false)
         setSessionID(null)
         setUser({})
     };

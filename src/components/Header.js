@@ -17,7 +17,7 @@ const Header = (props) => {
 
     return (
         <>
-            <div className={"Header"}>
+            <div className={"Header"} id={"Header"}>
                 <div className={"flex w-100"}>
 
                     <div className={"flex w-75 fl"}>
@@ -47,7 +47,7 @@ const Header = (props) => {
                 {auth.authenticated &&
                 <nav className={"mt2 mb2"}>
                     <ul className={"flex list"}>
-                        {auth.admin &&
+                        {auth.isAdmin &&
                         <li className={'pa2 dashboardIcon'}>
                             <Link to={'/members'}>Members</Link>
                         </li>

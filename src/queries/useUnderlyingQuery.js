@@ -22,4 +22,5 @@ const underlyingQuery = gql`
   }
 `;
 
-export default (variables) => useQuery(underlyingQuery, variables);
+const useUnderlyingQuery = (variables) => useQuery(underlyingQuery, variables);
+export default useUnderlyingQuery

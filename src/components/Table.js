@@ -1,4 +1,4 @@
-import {useState} from "react";
+import React, {useState} from "react";
 import useSortableData from "../helpers/useSortableData";
 import DateFromInt from '../helpers/Date';
 import CustomContextMenu from "./CustomContextMenu";
@@ -39,7 +39,6 @@ const Table = (props) => {
 
     return (
         <>
-
             {tableType === "dashboardUnderlying" &&
             <table>
                 <caption className={'f4 darkRed bold pb3'}>Open Underlying Positions: {numPositions}</caption>
