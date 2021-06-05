@@ -1,33 +1,38 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import useSortableData from "../helpers/useSortableData";
 import DateFromInt from '../helpers/Date';
 import CustomContextMenu from "./CustomContextMenu";
 import { ContextMenuTrigger } from "react-contextmenu";
+import Popup from "./Popup";
 
-const Table = (props) => {
-    const tableType = props.tableType
-    const numPositions = props.numPositions
+const Table = (
+    {
+        data,
+        tableType,
+        numPositions,
+        userId,
+        refetch,
+        setDataVariables,
+        archiveText,
+        setArchiveText
+    }) => {
 
-    const { items, requestSort, sortConfig } = useSortableData(props.data);
-
+    const { items, requestSort, sortConfig } = useSortableData(data);
     const [switchOptionTypeButton, setSwitchOptionTypeButton] = useState("Open")
-    const userId = props.userId
-    const refreshData = props.refetch
-    const setDataVariables = props.setOptionQueryVars
 
-    const collect = props => {
-        return { id: props.optionId  }
+    const collect = (element) => {
+        return { element: element }
     }
 
     const toggleOptionTypeButton = (content) => {
-        if (content == "Open") {
+        if (content === "Open") {
             setSwitchOptionTypeButton("Closed")
             setDataVariables( { input: { userId: userId, open: false } } )
         } else {
             setSwitchOptionTypeButton("Open")
             setDataVariables( { input: { userId: userId, open: true } } )
         }
-        refreshData()
+        refetch()
     }
 
     const getClassNamesFor = (name) => {
@@ -37,13 +42,51 @@ const Table = (props) => {
         return sortConfig.key === name ? sortConfig.direction : undefined;
     };
 
+    const [popupTrigger, setPopupTrigger] = useState()
+    const [arrowElement, setArrowElement] = useState()
+    //TODO fix popup hook
+
     return (
         <>
+            {popupTrigger &&
+                <Popup
+                    popupId={"testId"}
+                    type={"tooltip"}
+                    triggerType={"mouseover"}
+                    trigger={popupTrigger}
+                    arrow={arrowElement}
+                    setArrow={setArrowElement}
+                    content={"Test popup content!"}
+                    options={{
+                        modifiers: [
+                            {
+                                name: 'offset',
+                                options: {
+                                    offset: [0, 0],
+                                },
+                            },
+                            {
+                                name: 'arrow',
+                                options: {
+                                    element: arrowElement
+                                }
+                            }
+                        ],
+                    }}
+                />
+            }
+
             {tableType === "dashboardUnderlying" &&
+
             <table>
-                <caption className={'f4 darkRed bold pb3'}>Open Underlying Positions: {numPositions}</caption>
+                <caption
+                    ref={setPopupTrigger}
+                    className={'f4 darkRed bold pb3'}
+                >
+                    Open Underlying Positions: {numPositions}
+                </caption>
                 <thead>
-                <tr>
+                <tr key={"header-row"}>
                     <th>
                         <button
                             type="button"
@@ -75,8 +118,8 @@ const Table = (props) => {
                 </thead>
                 <tbody>
 
-                {items.map( (item) => (
-                    <tr key={item.id}>
+                {items.map( (item, index) => (
+                    <tr key={index}>
                         <td>{item.symbol}</td>
                         <td>{item.qty}x</td>
                         <td>${item.targetPrice}</td>
@@ -92,7 +135,7 @@ const Table = (props) => {
             <table>
                 <caption className={'f4 darkRed bold pb3'}><button onClick={() => toggleOptionTypeButton(switchOptionTypeButton)}>{switchOptionTypeButton}</button> Option Positions</caption>
                 <thead>
-                <tr>
+                <tr key={"header-row"}>
                     <th>
                         <button
                             type="button"
@@ -154,8 +197,16 @@ const Table = (props) => {
                 </thead>
                 <tbody>
 
-                {items.map( (item) => (
-                    <ContextMenuTrigger renderTag={"tr"} name={item._id} optionId={item._id} key={item._id} collect={collect} id={"SIMPLE"}>
+                {items.map( (item, index) => (
+                    <>
+                    <ContextMenuTrigger
+                        renderTag={"tr"}
+                        name={item._id}
+                        id={"SIMPLE_" + item._id}
+                        optionId={item._id}
+                        key={index}
+                        collect={collect}
+                    >
                         <td>{item.symbol}</td>
                         <td>{item.qty}</td>
                         <td>{item.entryDate}</td>
@@ -164,11 +215,17 @@ const Table = (props) => {
                         <td>{item.initialAroi}%</td>
                         <td>{item.notes}</td>
                     </ContextMenuTrigger>
+
+                    <CustomContextMenu
+                        elementId={"SIMPLE_" + item._id}
+                        archiveText={archiveText}
+                        setArchiveText={setArchiveText}
+                    />
+                    </>
                 ))}
                 </tbody>
             </table>
 
-            <CustomContextMenu type={"option"} actions={null} />
             </>
             }
 
@@ -177,7 +234,7 @@ const Table = (props) => {
             <table>
                 <caption className={'f4 darkRed bold pb3'}>Banking Transactions</caption>
                 <thead>
-                <tr>
+                <tr key={"header-row"}>
                     <th>
                         <button
                             type="button"
@@ -209,8 +266,8 @@ const Table = (props) => {
                 </thead>
                 <tbody>
 
-                {items.map( (item) => (
-                    <tr key={item._id}>
+                {items.map( (item, index) => (
+                    <tr key={index}>
                         <td>{DateFromInt(item.date)}</td>
                         <td>{item.type}</td>
                         <td>${item.amount.toLocaleString()}</td>
@@ -226,7 +283,7 @@ const Table = (props) => {
                 <table>
                     <caption className={'f4 darkRed bold pb3'}><button onClick={() => toggleOptionTypeButton(switchOptionTypeButton)}>{switchOptionTypeButton}</button> Underlying Positions</caption>
                     <thead>
-                    <tr>
+                    <tr key={"header-row"}>
                         <th>
                             <button
                                 type="button"
@@ -285,8 +342,15 @@ const Table = (props) => {
                     </thead>
                     <tbody>
 
-                    {items.map( (item) => (
-                        <ContextMenuTrigger renderTag={"tr"} name={item._id} optionId={item._id} key={item._id} collect={collect} id={"SIMPLE"}>
+                    {items.map( (item, index) => (
+                        <ContextMenuTrigger
+                            renderTag={"tr"}
+                            name={item._id}
+                            optionId={item._id}
+                            key={index}
+                            collect={collect}
+                            id={"SIMPLE_" + item._id}
+                        >
                             <td>{item.symbol}</td>
                             <td>{item.currentShares}</td>
                             <td>{DateFromInt(item.startDate)}</td>

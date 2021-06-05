@@ -53,6 +53,7 @@ const Login = props => {
         runGoogleAuthMutation({ variables: variables })
             .then(res => {
                 if(res.data.processGoogleAuth) {
+                    setAuthType("Google")
                     const googleUser = res.data.processGoogleAuth
                     auth.googleSignin(googleUser, setRedirect)
                 }

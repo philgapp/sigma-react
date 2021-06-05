@@ -4,8 +4,7 @@ import AddUnderlying from './AddUnderlying'
 import Table from './Table'
 import useAuth from '../helpers/useAuth'
 import useUnderlyingQuery from "../queries/useUnderlyingQuery";
-import DateFromInt from "../helpers/Date";
-
+//import DateFromInt from "../helpers/Date";
 
 const Underlying = (props) => {
 
@@ -32,8 +31,8 @@ const Underlying = (props) => {
         }
     },[data])
 
-    const showForm = (props) => {
-        if (props === false) {
+    const showForm = (bool) => {
+        if (bool === false) {
             setShowUnderlyingForm(true)
             setUnderlyingFormButtonText("Hide Form")
         } else {
@@ -46,11 +45,20 @@ const Underlying = (props) => {
         <div className={"appPage w-100"}>
             <h3 className={"f3"}>Underlying Positions</h3>
             <button onClick={() => showForm(showUnderlyingForm)} className={'ml3 pa3 add'}>
+
                 {underlyingFormButtonText}
+
             </button>
 
             {showUnderlyingForm &&
-                <AddUnderlying underlyingTrades={underlyingTableData} refetch={refetch} showUnderlyingForm={showUnderlyingForm} showForm={showForm} />
+
+                <AddUnderlying
+                    underlyingTrades={underlyingTableData}
+                    refetch={refetch}
+                    showUnderlyingForm={showUnderlyingForm}
+                    showForm={showForm}
+                />
+
             }
 
             <Banking />
@@ -58,7 +66,11 @@ const Underlying = (props) => {
             <div>
                 {(underlyingTableData.length > 0) &&
                     <>
-                        <Table data={underlyingTableData} tableType={"allUnderlying"} refetch={refetch} setOptionQueryVars={setOptionQueryVars} />
+                        <Table
+                            data={underlyingTableData}
+                            tableType={"allUnderlying"}
+                            refetch={refetch}
+                            setDataVariables={setOptionQueryVars} />
                     </>
                 }
             </div>

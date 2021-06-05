@@ -1,17 +1,14 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {
     BrowserRouter as Router,
     Switch,
     Route,
     useLocation,
     Redirect,
-    Link,
-    useHistory
 } from "react-router-dom";
 import '../styles/App.css';
 import useAuth, {
     ProvideAuth,
-    AuthButton
 }  from '../helpers/useAuth'
 import Login from './Login'
 import Header from './Header';
@@ -19,9 +16,19 @@ import Dashboard from './Dashboard';
 import Options from './Options';
 import Underlying from './Underlying';
 import AroiCalculator from './AroiCalculator';
-import AddItem from './AddItem'
+import useOptionForm from '../helpers/useOptionForm'
+//import AddItem from './AddItem'
+
 
 function App() {
+
+    // addOption Form State Hook
+    const {
+        showOptionForm,
+        optionFormButtonText,
+        showForm
+    } = useOptionForm()
+
     return (
         <ProvideAuth>
             <Router>
@@ -33,13 +40,21 @@ function App() {
                         <AroiCalculator />
                     </PrivateRoute>
                     <PrivateRoute path="/options">
-                        <Options />
+                        <Options
+                            showForm={showForm}
+                            showOptionForm={showOptionForm}
+                            optionFormButtonText={optionFormButtonText}
+                        />
                     </PrivateRoute>
                     <PrivateRoute path="/underlying">
                         <Underlying />
                     </PrivateRoute>
                     <PrivateRoute path="/dashboard">
-                        <Dashboard />
+                        <Dashboard
+                            showForm={showForm}
+                            showOptionForm={showOptionForm}
+                            optionFormButtonText={optionFormButtonText}
+                        />
                     </PrivateRoute>
                     <Route path="/login">
                         <Login />

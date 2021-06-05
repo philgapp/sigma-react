@@ -11,4 +11,6 @@ const bankingQuery = gql`
   }
 `;
 
-export default (variables) => useQuery(bankingQuery, variables);
+const useBankingQuery = (variables) => useQuery(bankingQuery, variables)
+
+export default useBankingQuery

@@ -18,7 +18,9 @@ const addOptionMutation = gql`
   }
 `;
 
-export default (variables) => {
+const useAddOptionMutation = (variables) => {
     const [addOption] = useMutation(addOptionMutation, variables);
     return addOption
-};
+}
+
+export default useAddOptionMutation

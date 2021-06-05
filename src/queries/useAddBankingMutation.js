@@ -11,7 +11,9 @@ const addBankingMutation = gql`
   }
 `;
 
-export default (variables) => {
+const useAddBankingMutation = (variables) => {
     const [addBanking] = useMutation(addBankingMutation, variables);
     return addBanking
-};
+}
+
+export default useAddBankingMutation

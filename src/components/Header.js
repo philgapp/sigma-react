@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import useAuth, { SignoutButton } from '../helpers/useAuth'
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Header = (props) => {
     //const { header } = props;
@@ -12,7 +12,7 @@ const Header = (props) => {
 
     const toggleUserMenu = props => {
         props.e.preventDefault()
-        props.showUserMenu == false ? setShowUserMenu(true) : setShowUserMenu(false)
+        props.showUserMenu === false ? setShowUserMenu(true) : setShowUserMenu(false)
     }
 
     return (
@@ -32,10 +32,10 @@ const Header = (props) => {
                     {auth.authenticated &&
                     <div className={"w-25 fr"}>
                         <div className={"userSettings self-start"}>
-                            <a className={"userButton"}
+                            <button className={"userButton"}
                                onClick={(e) => toggleUserMenu({e, showUserMenu: showUserMenu})}>
                                 {firstName || ""}
-                            </a>
+                            </button>
                         </div>
                     </div>
                     }

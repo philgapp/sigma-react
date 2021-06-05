@@ -61,16 +61,18 @@ p {
   text-align: right;
 }
 
-.Header .userSettings a.userButton {
+.Header .userSettings .userButton {
+  border: none;
   padding-right:42px;
   background-image: url(../assets/menuIcon3.png);
   background-repeat: no-repeat;
   background-size: 28px;
   background-position: right center;
+  background-color: transparent;
   font-size: 1.2em;
 }
 
-.Header .userSettings a.userButton:hover {
+.Header .userSettings .userButton:hover {
   cursor: pointer;
   color: black;
 }
