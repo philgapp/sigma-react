@@ -2,7 +2,16 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { usePopper } from "react-popper";
 import '../styles/popper.css';
 
-const Popup = ({popupId, type = "modal", triggerType, trigger, arrow, setArrow, content, options}) => {
+const Popup = ({
+        popupId,
+        type = "modal",
+        triggerType,
+        trigger,
+        arrow,
+        setArrow,
+        content,
+        options
+    }) => {
 
     // The popup element is built within the return JSX
     const [popupEl, setPopupEl] = useState()
@@ -67,7 +76,7 @@ const Popup = ({popupId, type = "modal", triggerType, trigger, arrow, setArrow, 
         // If any props change and usePopper has initialized, update the Popper instance
         if(update) update()
 
-    },[type, trigger, triggerType, popupEl, content, options, update, showPopup, hidePopup])
+    },[type, trigger, triggerType, popupEl, content, arrow, options, update, showPopup, hidePopup])
 
     return (
         <div
@@ -94,6 +103,7 @@ const Popup = ({popupId, type = "modal", triggerType, trigger, arrow, setArrow, 
 
                 {type === "tooltip" &&
                     <div
+                        className={"arrow"}
                         ref={setArrow}
                         style={styles.arrow}
                     />

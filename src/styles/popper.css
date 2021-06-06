@@ -38,19 +38,19 @@
     display: block;
 }
 
-.tooltip[data-popper-placement^='top'] > #arrow {
+.tooltip[data-popper-placement^='top'] > .arrow {
     bottom: -4px;
 }
 
-.tooltip[data-popper-placement^='bottom'] > #arrow {
+.tooltip[data-popper-placement^='bottom'] > .arrow {
     top: -4px;
 }
 
-.tooltip[data-popper-placement^='left'] > #arrow {
+.tooltip[data-popper-placement^='left'] > .arrow {
     right: -4px;
 }
 
-.tooltip[data-popper-placement^='right'] > #arrow {
+.tooltip[data-popper-placement^='right'] > .arrow {
     left: -4px;
 }
 
@@ -58,19 +58,19 @@
     display: block;
 }
 
-.popup[data-popper-placement^='top'] > #arrow {
+.popup[data-popper-placement^='top'] > .arrow {
     bottom: -4px;
 }
 
-.popup[data-popper-placement^='bottom'] > #arrow {
+.popup[data-popper-placement^='bottom'] > .arrow {
     top: -4px;
 }
 
-.popup[data-popper-placement^='left'] > #arrow {
+.popup[data-popper-placement^='left'] > .arrow {
     right: -4px;
 }
 
-.popup[data-popper-placement^='right'] > #arrow {
+.popup[data-popper-placement^='right'] > .arrow {
     left: -4px;
 }
 
@@ -88,4 +88,21 @@ button.archiveSubmit {
 
 .trigger {
     cursor: help;
+}
+
+.arrow {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+}
+.arrow:after {
+     content: " ";
+     position: absolute;
+     top: -25px;
+    padding-left: 0;
+     transform: rotate(45deg);
+     width: 10px;
+     height: 10px;
+     background-color: white;
+     box-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
 }

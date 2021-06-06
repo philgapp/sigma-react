@@ -8,11 +8,10 @@ import { withRouter } from "react-router-dom";
 
 const Dashboard = (props) => {
     const auth = useAuth()
-    const {
-        showForm,
+    const { showForm,
         showOptionForm,
         optionFormButtonText,
-    } = props
+        history } = props
     const dashboardQueryVars = { id: auth.user._id }
     const { data, refetch } = useDashboardQuery( {variables: dashboardQueryVars } );
     const apiData = data ?  data.getDashboard : null
@@ -20,7 +19,7 @@ const Dashboard = (props) => {
     const handleClick = (event) => {
         event.preventDefault()
         showForm(false)
-        props.history.push('/options')
+        history.push('/options')
     }
 
     return (

@@ -48,25 +48,23 @@ const Options = ({ showForm, showOptionForm, optionFormButtonText }) => {
 
     return (
         <div className={"appPage w-100"}>
-            <h3 className={"f3"}>Option Positions</h3>
+
+            <h3 className={"f3"}>
+                Option Positions</h3>
 
             <button
                 onClick={() => showForm(showOptionForm)}
-                className={'ml3 pa3 add'}
-            >
-                {optionFormButtonText}
-            </button>
+                className={'ml3 pa3 add'} >
+                {optionFormButtonText} </button>
 
             {showOptionForm &&
                 <AddOption
                     refetch={refetch}
                     showOptionForm={showOptionForm}
-                    showForm={showForm}
-                />
-            }
+                    showForm={showForm} /> }
 
             <div>
-                {(optionTableData.length > 0) &&
+                { (optionTableData.length > 0) &&
                     <>
                         <Table
                             tableType={"allOptions"}
@@ -75,13 +73,12 @@ const Options = ({ showForm, showOptionForm, optionFormButtonText }) => {
                             setDataVariables={setOptionQueryVars}
                             userId={userId}
                             archiveText={archiveText}
-                            setArchiveText={setArchiveText}
-                        />
-                    </>
-                }
+                            setArchiveText={setArchiveText} />
+                    </> }
             </div>
-        </div>
-    );
-};
 
-export default Options;
+        </div>
+    )
+}
+
+export default Options
