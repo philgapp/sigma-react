@@ -41,7 +41,6 @@ const Table = (
 
     const [ popupTrigger, setPopupTrigger ] = useState()
     const [ arrowElement, setArrowElement ] = useState()
-    //TODO fix popup hook
 
     return (
         <>

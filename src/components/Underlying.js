@@ -4,9 +4,8 @@ import AddUnderlying from './AddUnderlying'
 import Table from './Table'
 import useAuth from '../helpers/useAuth'
 import useUnderlyingQuery from "../queries/useUnderlyingQuery";
-//import DateFromInt from "../helpers/Date";
 
-const Underlying = (props) => {
+const Underlying = () => {
 
     const auth = useAuth()
     const userId = auth.user._id
@@ -45,23 +44,12 @@ const Underlying = (props) => {
         <div className={"appPage w-100"}>
             <h3 className={"f3"}>Underlying Positions</h3>
             <button onClick={() => showForm(showUnderlyingForm)} className={'ml3 pa3 add'}>
-
-                {underlyingFormButtonText}
-
-            </button>
+                {underlyingFormButtonText} </button>
 
             {showUnderlyingForm &&
-
                 <AddUnderlying
                     underlyingTrades={underlyingTableData}
-                    refetch={refetch}
-                    showUnderlyingForm={showUnderlyingForm}
-                    showForm={showForm}
-                />
-
-            }
-
-            <Banking />
+                    refetch={refetch} /> }
 
             <div>
                 {(underlyingTableData.length > 0) &&
@@ -74,6 +62,8 @@ const Underlying = (props) => {
                     </>
                 }
             </div>
+
+            <Banking />
 
         </div>
     );
