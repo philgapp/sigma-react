@@ -19,7 +19,6 @@ import AroiCalculator from './AroiCalculator';
 import useOptionForm from '../helpers/useOptionForm'
 //import AddItem from './AddItem'
 
-
 function App() {
 
     // addOption Form State Hook
@@ -37,34 +36,25 @@ function App() {
 
                 <Switch>
                     <PrivateRoute path="/aroi">
-                        <AroiCalculator />
-                    </PrivateRoute>
+                        <AroiCalculator /> </PrivateRoute>
                     <PrivateRoute path="/options">
                         <Options
                             showForm={showForm}
                             showOptionForm={showOptionForm}
-                            optionFormButtonText={optionFormButtonText}
-                        />
-                    </PrivateRoute>
+                            optionFormButtonText={optionFormButtonText} /> </PrivateRoute>
                     <PrivateRoute path="/underlying">
-                        <Underlying />
-                    </PrivateRoute>
+                        <Underlying /> </PrivateRoute>
                     <PrivateRoute path="/dashboard">
                         <Dashboard
                             showForm={showForm}
                             showOptionForm={showOptionForm}
-                            optionFormButtonText={optionFormButtonText}
-                        />
-                    </PrivateRoute>
+                            optionFormButtonText={optionFormButtonText} /> </PrivateRoute>
                     <Route path="/login">
-                        <Login />
-                    </Route>
+                        <Login /> </Route>
                     <Route path="/">
-                        <Login />
-                    </Route>
+                        <Login /> </Route>
                     <Route path="*">
-                        <NoMatch />
-                    </Route>
+                        <NoMatch /> </Route>
                 </Switch>
 
                 </div>
@@ -73,25 +63,22 @@ function App() {
     );
 }
 
-function PrivateRoute({ children, ...rest }) {
+function PrivateRoute( { children, ...rest } ) {
     const auth = useAuth();
     return (
         <Route
-            {...rest}
-            render={({ location }) =>
-                auth.authenticated ? (
-                    children
-                ) : (
+            { ...rest }
+            render={ ( { location } ) =>
+                auth.authenticated
+                    ? ( children )
+                    : (
                     <Redirect
                         to={{
                             pathname: "/login",
                             state: { from: location }
-                        }}
-                    />
-                )
-            }
-        />
-    );
+                        }} /> )
+            } />
+    )
 }
 
 function NoMatch() {
@@ -100,10 +87,8 @@ function NoMatch() {
     return (
         <div>
             <h3>
-                No match for <code>{location.pathname}</code>
-            </h3>
-        </div>
-    );
+                No match for <code>{location.pathname}</code> </h3>
+        </div> )
 }
 
 export default App;

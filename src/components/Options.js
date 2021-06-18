@@ -35,7 +35,7 @@ const Options = ({ showForm, showOptionForm, optionFormButtonText }) => {
             arrayItem.expirationDate = DateFromInt(option.spreads[0].legs[0].expirationDate)
             arrayItem.initialAroi = option.spreads[0].legs[0].initialAroi
             arrayItem.notes = option.spreads[0].legs[0].notes
-            resultData.push(arrayItem)
+            return resultData.push(arrayItem)
         })
         setOptionTableData(resultData)
     }

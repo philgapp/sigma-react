@@ -58,16 +58,12 @@ const Table = (
                             {
                                 name: 'offset',
                                 options: {
-                                    offset: [20, 8],
-                                },
-                            },
+                                    offset: [20, 8], }, },
                             {
                                 name: 'arrow',
                                 options: {
                                     enabled: "true",
-                                    element: arrowElement
-                                }
-                            }
+                                    element: arrowElement } }
                         ],
                         placement: 'top' } } /> }
 
@@ -140,15 +136,13 @@ const Table = (
                             type="button"
                             onClick={ () => requestSort('entryDate') }
                             className={ getClassNamesFor('entryDate') } >
-                            Entry Date
-                        </button>
+                            Entry Date</button>
                     </th>
                     <th>
                         <button
                             type="button"
                             onClick={ () => requestSort('strike') }
-                            className={ getClassNamesFor('strike') }
-                        >
+                            className={ getClassNamesFor('strike') } >
                             Strike</button> </th>
                     <th>
                         <button
@@ -172,14 +166,13 @@ const Table = (
                 </thead>
                 <tbody>
 
-                { items.map( ( item, index) => (
-                    <>
+                { items.map( ( item ) => (
                     <ContextMenuTrigger
                         renderTag={ "tr" }
+                        key={ item._id }
                         name={ item._id }
                         id={ "SIMPLE_" + item._id }
                         optionId={ item._id }
-                        key={ index }
                         collect={ collect } >
                         <td>{ item.symbol }</td>
                         <td>{ item.qty }</td>
@@ -188,13 +181,15 @@ const Table = (
                         <td>{ item.expirationDate }</td>
                         <td>{ item.initialAroi }%</td>
                         <td>{ item.notes }</td>
-                    </ContextMenuTrigger>
+                    </ContextMenuTrigger> ) ) }
 
+                { items.map( ( item, index) => (
                     <CustomContextMenu
+                        key={ item._id }
                         elementId={ "SIMPLE_" + item._id }
                         archiveText={ archiveText }
-                        setArchiveText={ setArchiveText } />
-                    </> ) ) }
+                        setArchiveText={ setArchiveText } /> ) ) }
+
                 </tbody>
             </table>
             </> }
@@ -222,8 +217,7 @@ const Table = (
                         <button
                             type="button"
                             onClick={() => requestSort('amount')}
-                            className={getClassNamesFor('amount')}
-                        >
+                            className={getClassNamesFor('amount')} >
                             Amount
                         </button>
                     </th>
@@ -250,76 +244,69 @@ const Table = (
                         Underlying Positions</caption>
                     <thead>
                     <tr key={"header-row"}>
-                        <th>
+                        <th key={"symbol"}>
                             <button
                                 type="button"
                                 onClick={() => requestSort('symbol')}
                                 className={getClassNamesFor('symbol')} >
                                 Symbol</button> </th>
-                        <th>
+                        <th key={"shares"}>
                             <button
                                 type="button"
                                 onClick={() => requestSort('currentShares')}
                                 className={getClassNamesFor('currentShares')} >
                                 Shares</button> </th>
-                        <th>
+                        <th key={"startDate"}>
                             <button
                                 type="button"
                                 onClick={() => requestSort('startDate')}
                                 className={getClassNamesFor('startDate')}>
-                                Start Date
-                            </button>
-                        </th>
-                        <th>
+                                Start Date</button> </th>
+                        <th key={"rawCostBasis"}>
                             <button
                                 type="button"
                                 onClick={() => requestSort('rawCostBasis')}
                                 className={getClassNamesFor('rawCostBasis')}>
-                                Raw Cost Basis
-                            </button>
-                        </th>
-                        <th>
+                                Raw Cost Basis</button> </th>
+                        <th key={"targetPriceWeekly"}>
                             <button
                                 type="button"
                                 onClick={() => requestSort('targetPriceWeek')}
                                 className={getClassNamesFor('targetPriceWeek')}>
-                                Target Price (1 week)
-                            </button>
-                        </th>
-                        <th>
+                                Target Price (1 week)</button> </th>
+                        <th key={"targetPriceMonthly"}>
                             <button
                                 type="button"
                                 onClick={() => requestSort('targetPriceMonth')}
                                 className={getClassNamesFor('targetPriceMonth')}>
-                                Target Price (1 month)
-                            </button>
-                        </th>
+                                Target Price (1 month)</button> </th>
                     </tr>
                     </thead>
                     <tbody>
 
-                    {items.map( (item, index) => (
-                        <>
+                    {items.map( (item) => (
                         <ContextMenuTrigger
                             renderTag={"tr"}
                             name={item._id}
                             optionId={item._id}
-                            key={index}
+                            key={item._id}
                             collect={collect}
                             id={"SIMPLE_" + item._id}>
-                            <td>{item.symbol}</td>
-                            <td>{item.currentShares}</td>
-                            <td>{DateFromInt(item.startDate)}</td>
-                            <td>${item.rawCostBasis}</td>
-                            <td>${item.targetPriceWeek}</td>
-                            <td>${item.targetPriceMonth}</td>
-                        </ContextMenuTrigger>
+                            <td key={item._id + 1}>{item.symbol}</td>
+                            <td key={item._id + 2}>{item.currentShares}</td>
+                            <td key={item._id + 3}>{DateFromInt(item.startDate)}</td>
+                            <td key={item._id + 4}>${item.rawCostBasis}</td>
+                            <td key={item._id + 5}>${item.targetPriceWeek}</td>
+                            <td key={item._id + 6}>${item.targetPriceMonth}</td>
+                        </ContextMenuTrigger> ) ) }
 
+                    {items.map( (item) => (
                         <CustomContextMenu
+                            key={item._id + 1}
                             elementId={"SIMPLE_" + item._id}
                             archiveText={archiveText}
-                            setArchiveText={setArchiveText} />
-                        </> ) ) }
+                            setArchiveText={setArchiveText} /> ) ) }
+
                     </tbody>
                 </table>
             </> }

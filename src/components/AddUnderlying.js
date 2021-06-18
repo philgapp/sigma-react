@@ -26,7 +26,7 @@ const AddUnderlying = (
 
     const auth = useAuth()
     const runAddUnderlying = useAddUnderlyingMutation()
-    const [ formData, setFormData ] = useReducer(formReducer, {})
+    const [ formData, setFormData ] = useReducer(formReducer, { name: "symbol", value: "" })
     const [ validSymbol, setValidSymbol ] = useState(false)
     const [ tradeDate, setTradeDate ] = useState(today)
     const [ startDate, setStartDate ] = useState(today)
@@ -37,29 +37,29 @@ const AddUnderlying = (
     const [ dropdownData, setDropdownData ] = useState([])
 
     const processFormData = () => {
-        const underlyingInput = {}
-        underlyingInput._id = formData._id
-        underlyingInput.userId = auth.user._id
-        underlyingInput.symbol = formData.symbol.toUpperCase()
-        underlyingInput.startDate = formData.startDate
-        const underlyingTradeInput = {}
-        underlyingTradeInput.type = formData.type
-        underlyingTradeInput.tradeDate = formData.tradeDate
-        underlyingTradeInput.shares = parseInt(formData.shares)
-        underlyingTradeInput.price = parseFloat(formData.price)
-        underlyingInput.underlyingTrades = underlyingTradeInput
-        const input = { input: underlyingInput }
-        return input
+        const underlyingTradeInput = {
+            type: formData.type,
+            tradeDate: formData.tradeDate,
+            shares: parseInt(formData.shares),
+            price: parseFloat(formData.price) }
+        const underlyingInput = {
+            _id: formData._id,
+            userId: auth.user._id,
+            symbol: formData.symbol.toUpperCase(),
+            startDate: formData.startDate,
+            underlyingTrades: underlyingTradeInput }
+        return{
+            input: underlyingInput }
     }
 
     const forceSymbolRefresh = () => {
         const elem = document.getElementById("symbol")
-        const event = new Event('input', { bubbles: true } )
+        //const event = new Event('input', { bubbles: true } )
         const nativeInputValueSetter = Object.getOwnPropertyDescriptor( window.HTMLInputElement.prototype, "value" ).set
         nativeInputValueSetter.call( elem, "")
-        const trigger = elem.dispatchEvent( event )
+        //const trigger = elem.dispatchEvent( event )
         nativeInputValueSetter.call( elem, formData.symbol )
-        const trigger2 = elem.dispatchEvent( event )
+        //const trigger2 = elem.dispatchEvent( event )
     }
 
     const handleSubmit = event => {
@@ -92,9 +92,10 @@ const AddUnderlying = (
             return filterResult }
     }
 
-    const loadUnderlyingPositions = ( matchingPositions ) => {
+    const loadUnderlyingPositions = ( matchingPositions, eventValue ) => {
         if( matchingPositions.length ) {
-            setFormData( { name:"_id", value: matchingPositions[0]._id } )
+            // setFormData( { name: "_id", value: matchingPositions[0]._id } )
+            setFormData( { name: "symbol", value: eventValue } )
             const data = (
                 <ul id={ "underlyingDropdownList" } >
                     { matchingPositions.map( ( position ) => (
@@ -105,16 +106,16 @@ const AddUnderlying = (
     }
 
     const unloadUnderlyingPositions = () => {
-        setFormData( { name:"_id",value: null } )
+        setFormData( { name: "_id", value: null } )
         setDropdownData( [] )
     }
 
-    // TODO this needs to happen after a short pause in typing,
-    //  hitting ENTER to select the top (or highlighted) option in a popup,
-    //  and allowing a use to use arrow keys OR mouse to select a possible option
     const handleChange = event => {
-        if( event.target.name === 'symbol' ) {
-            if( event.target.value.length < 1 ) {
+        if( event.target.name === "symbol" ) {
+            const eventValue = event.target.value
+            setFormData ( { name: "symbol", value: eventValue } )
+            if( eventValue < 1 ) {
+                setFormData( { name: "_id", value: null } )
                 setValidSymbol(false)
                 setDropdownData( "" )
                 return
@@ -122,12 +123,8 @@ const AddUnderlying = (
                 if( openUnderlyingTrades.length ) {
                     const matchingOpenTrades = historyFilter( openUnderlyingTrades, event.target.value.toUpperCase() )
                     matchingOpenTrades.length
-                        ? loadUnderlyingPositions( matchingOpenTrades )
-                        : unloadUnderlyingPositions()
-                }
-                // @TODO this isn't perfect because the form remains open before selecting from the new dropdown,
-                //  form should only show with either a selection dropdown,
-                //  OR when the dropdown is not visible and there is a new symbol in the input
+                        ? loadUnderlyingPositions( matchingOpenTrades, eventValue )
+                        : unloadUnderlyingPositions() }
                 setValidSymbol(true )
             }
         }
@@ -139,6 +136,7 @@ const AddUnderlying = (
                 value: event.target.value, } )
     }
 
+    // @TODO test changing inputs in non linear order to see if this break some of the data
     // Set formData defaults on initial load
     useEffect(() => {
         setFormData( { name: "type", value: 'Buy' } )
@@ -148,7 +146,7 @@ const AddUnderlying = (
         setFormData( { name: "price", value: 0 } )
         setFormData( { name: "_id", value: null } )
         setOpenUnderlyingTrades( underlyingTrades )
-    },[] )
+    },[ startDate, tradeDate, underlyingTrades, setOpenUnderlyingTrades ] )
 
     return (
         <div className={'flex w-100'}>
@@ -161,6 +159,7 @@ const AddUnderlying = (
                                 Symbol / Ticker</p>
                             <input
                                 autoComplete={"off"}
+                                value={ formData.symbol }
                                 type={'text'}
                                 className={"upperCase"}
                                 placeholder={'SPY'}
@@ -168,6 +167,8 @@ const AddUnderlying = (
                                 name={'symbol'}
                                 onChange={ handleChange }
                                 ref={ setPopupTrigger }/>
+                            <p>{formData._id}</p>
+                            <p>{formData.symbol}</p>
                             <Popup
                                 popupId={"underlyingSymbolDropdown"}
                                 type={"inputDropdown"}

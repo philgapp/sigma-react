@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, {useState, useRef, useEffect, useMemo, useCallback} from 'react';
 import { usePopper } from "react-popper";
 import '../styles/popper.css';
 
@@ -39,6 +39,7 @@ const Popup = (
     // Refs
     // - for storing most recent state data for inputDropdown
     const dropdownContentRef = useRef()
+    const symbolsRef = useRef([])
     const listElementRef = useRef()
     // - to track keyboard event listener to maintain a single instance
     const isKeyboardListenerActive = useRef(false)
@@ -89,49 +90,94 @@ const Popup = (
     // Event Functions
     // - Selecting child elements of type "inputDropdown" popups
     // - keydown 'tab' or 'return'
-    const selectDropdownElement = () => {
+    const selectDropdownElement = useCallback( () => {
         if( listElementRef.current ) {
-            setInputData( { name:"_id", value: listElementRef.current.getAttribute( 'id' ) } )
-            trigger.value = ( listElementRef.current.textContent || listElementRef.current.innerText )
+            setInputData( { name: "_id", value: listElementRef.current.getAttribute( 'id' ) } )
+            setInputData( { name: "symbol", value: ( listElementRef.current.textContent || listElementRef.current.innerText ) } )
+            //trigger.value = ( listElementRef.current.textContent || listElementRef.current.innerText )
             hidePopup()
         } else {
             return
         }
-    }
+    }, [ trigger, setInputData, hidePopup ] )
     // - Highlighting element in a populated, visible inputDropdown popup
     // - keydown up and down arrows
-    const highlightDropdownElement = ( keyAction ) => {
+    const highlightDropdownElement = useCallback( ( keyAction ) => {
+        // Set rawSymbols = DOM symbol list elements in the dropdown
         const rawSymbols = dropdownContentRef.current.props.children
-        const symbols = rawSymbols.map( ( element ) => {
-            return { symbol: element.props.children, id: element.props.id, selected: false }
-        } )
-        if( symbols.length === 1 ) {
-            listElementRef.current = document.getElementById( dropdownContentRef.current.props.children[0].props.id )
-            listElementRef.current.setAttribute( 'selected', "" )
-        } else if ( symbols.length > 1 ) {
 
-            const selectedElement = symbols.filter( ( symbol ) => {
-                console.log(symbol)
-                return symbol.selected === true
-            })
+        // If rawSymbols has no elements, clear symbolsRef.current
+        if( ! rawSymbols.length > 0 ) {
+            console.log('rawSymbols has no elements, clear symbolsRef.current')
+        }
 
-            if( keyAction === "downArrow" ) {
-                if( selectedElement.length > 0 ) {
-                    console.log( selectedElement )
-                } else {
-                    listElementRef.current = document.getElementById( dropdownContentRef.current.props.children[0].props.id )
+        // If there is a symbolsRef.current with selected: true,
+        // there are multiple possible choices,
+        // and the up or down arrow key was pressed,
+        // set selected: false on the currently true element and selected: true for the previous or next element as appropriate
+        if( symbolsRef.current.some( (element) => {
+            //console.log(element)
+            return element.selected === true
+        })) {
+            if( dropdownContentRef.current.props.children.length > 1 && ( keyAction === "downArrow" || keyAction === "upArrow" ) ) {
+                const indexTest = symbolsRef.current.map( (element) => {
+                    if (element.selected === true) {
+                        element.selected = false
+                        listElementRef.current.removeAttribute('selected')
+                        return dropdownContentRef.current.props.children.map( ( child ) => {
+                            return child.props.id
+                        }).indexOf( element.id )
+                    }
+                })
+                let index = indexTest.find( (key) => {
+                    return key != undefined
+                })
+                if( keyAction === "downArrow" ) {
+                    index += 1
+                }
+                if ( keyAction === "upArrow" ) {
+                    index -= 1
+                }
+                if( index < 0 ) index = 0
+                if( index >= dropdownContentRef.current.props.children.length ) index = dropdownContentRef.current.props.children.length - 1
+                console.log(dropdownContentRef.current.props.children.length)
+                console.log(index)
+                listElementRef.current = document.getElementById( dropdownContentRef.current.props.children[index].props.id )
+                listElementRef.current.setAttribute( 'selected', "" )
+                symbolsRef.current[index].selected = true
+            }
+            return
+        }
+
+        // If symbolsRef.current has no elements, set it based on rawSymbols
+        if( symbolsRef.current.length === 0 ) {
+            console.log('symbolsRef.current = 0 and is being set for the first time')
+            symbolsRef.current = rawSymbols.map( ( element ) => {
+                return {
+                    symbol: element.props.children,
+                    id: element.props.id,
+                    selected: false }
+            } )
+        }
+
+        // If there is NOT a symbolsRef.current with selected: true, set the first item to selected: true
+        if( !symbolsRef.current.some( (element) => {
+            return element.selected === true
+        })) {
+            console.log('there is no selected symbolsRef.current element, so set the first element to selected')
+            const singleElement = document.getElementById( dropdownContentRef.current.props.children[0].props.id )
+            listElementRef.current = singleElement
+            symbolsRef.current.map( (element) => {
+                if( listElementRef.current.textContent === element.symbol || listElementRef.current.innerText === element.symbol) {
+                    element.selected = true
                     listElementRef.current.setAttribute( 'selected', "" )
                 }
-
-            }
-            if( keyAction === "upArrow" ) {
-
-            }
+            })
         }
-    }
+    }, [] )
     // Process keyboard input for type "inputDropdown" popups
     // - calls selectDropdownElement or highlightDropdownElement functions as appropriate
-    const processKeyboardInput = (e) => {
+    const processKeyboardInput = useCallback( ( e ) => {
         if( !isKeyboardListenerActive.current ) {
             window.removeEventListener('keydown', processKeyboardInput )
             if( e ) {
@@ -171,7 +217,7 @@ const Popup = (
                     return
             }
         }
-    }
+    }, [ highlightDropdownElement, selectDropdownElement ] )
 
     // Primary side-effect functionality
     useEffect(() => {
@@ -218,7 +264,20 @@ const Popup = (
                     processKeyboardInput() }
             }
         }
-    }, [ content, showPopup, hidePopup ] )
+
+        // Cleanup function, removes event listeners on component unmount
+        return () => {
+            isKeyboardListenerActive.current = false
+            if( symbolsRef.current ) {
+                symbolsRef.current = []
+            }
+            if( listElementRef.current ) {
+                listElementRef.current.removeAttribute( 'selected', "" )
+                listElementRef.current = null
+            }
+            processKeyboardInput() }
+
+    }, [ type, trigger, triggerType, content, showPopup, hidePopup, processKeyboardInput ] )
 
 
     return (

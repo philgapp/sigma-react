@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, {useEffect, useState, useRef, useMemo, useCallback} from 'react';
 import { ContextMenu, MenuItem } from "react-contextmenu";
 import { usePopper } from "react-popper";
 import '../styles/popper.css';
@@ -53,6 +53,40 @@ const CustomContextMenu = (
         archiveTextRef.current = archiveText
     },[archiveText])
 
+    const hideModalFunction = useCallback( ( e ) => {
+        e = e || window.event
+        if (e.target !== modal && !modal.contains(e.target) ) {
+            e.preventDefault()
+            hideModal()
+        }
+    }, [ modal ] )
+
+    const hideModal= useCallback( () => {
+
+        const hideModalIfExternalClick = hideModalFunction
+
+        // Hide the tooltip
+        modal.removeAttribute('data-show');
+        modal.closest(".tooltipBackdrop").removeAttribute('data-show');
+        //setIsModalOpen(false)
+        window.removeEventListener('click', hideModalIfExternalClick, true)
+        window.removeEventListener('click', hideModalIfExternalClick, false)
+
+
+    }, [ modal, hideModalFunction ] )
+
+    function showModal() {
+
+        const hideModalIfExternalClick = hideModalFunction
+
+        // Make the tooltip visible
+        if(update) update()
+        modal.setAttribute('data-show', '');
+        modal.closest(".tooltipBackdrop").setAttribute('data-show', '');
+        //setIsModalOpen(true)
+        window.addEventListener('click', hideModalIfExternalClick, false)
+    }
+
     const archive = useMemo(() => (archiveKey) => (event) => {
         event.preventDefault()
         event.stopPropagation()
@@ -71,7 +105,7 @@ const CustomContextMenu = (
         } else {
             console.error("No ID and/or 'ARCHIVE' provided.")
         }
-    },[modal])
+    },[ setArchiveText, hideModal ])
 
     const ArchiveInput = ({ value, onChange, id }) => {
         return (
@@ -137,41 +171,18 @@ const CustomContextMenu = (
         showModal()
     }
 
-
-    function showModal() {
-        // Make the tooltip visible
-        if(update) update()
-        modal.setAttribute('data-show', '');
-        modal.closest(".tooltipBackdrop").setAttribute('data-show', '');
-        //setIsModalOpen(true)
-        window.addEventListener('click', hideModalIfExternalClick, false)
-    }
-
-    function hideModal() {
-        // Hide the tooltip
-        modal.removeAttribute('data-show');
-        modal.closest(".tooltipBackdrop").removeAttribute('data-show');
-        //setIsModalOpen(false)
-        window.removeEventListener('click', hideModalIfExternalClick, true)
-        window.removeEventListener('click', hideModalIfExternalClick, false)
-    }
-
-    const hideModalIfExternalClick = (e) => {
-        e = e || window.event
-        if (e.target !== modal && !modal.contains(e.target) ) {
-            e.preventDefault()
-            hideModal()
-        }
-    }
-
     return (
         <>
-            {type === "option" &&
-            <>
+            { type === "option" &&
+            <tr key={"customContextMenu"} className={"invisibleRow"}>
+                <td key={"customContextMenu"} className={"invisibleCell"}>
             <ContextMenu className={type} id={elementId}>
-                <MenuItem onClick={handleClick} data={{ action: "edit" }}>Edit</MenuItem>
-                <MenuItem onClick={handleClick} data={{ action: "close" }}>Close</MenuItem>
-                <MenuItem onClick={handleClick} data={{ action: "delete" }}>Archive</MenuItem>
+                <MenuItem onClick={ handleClick } data={{ action: "edit" }}>
+                    Edit</MenuItem>
+                <MenuItem onClick={ handleClick } data={{ action: "close" }}>
+                    Close</MenuItem>
+                <MenuItem onClick={ handleClick } data={{ action: "delete" }}>
+                    Archive</MenuItem>
             </ContextMenu>
 
             <div className={"tooltipBackdrop"} key={"tooltipBackdrop"}>
@@ -181,15 +192,16 @@ const CustomContextMenu = (
                     ref={setModal}
                     className={"tooltip"}
                     style={styles.popper}
-                    {...attributes.popper}
-                >
+                    {...attributes.popper} >
                     <div className={"pa2"} key={elementId + "modal"}>
                         {modalContent}
-                        <button id={"closeModal"} onClick={hideModal} className={"pa1"}>Close</button>
+                        <button id={"closeModal"} onClick={hideModal} className={"pa1"}>
+                            Close</button>
                     </div>
                 </div>
             </div>
-            </>
+                </td>
+            </tr>
             }
         </>
     );

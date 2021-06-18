@@ -68,7 +68,7 @@ const AddOption = (props) => {
 
         runAddOption({variables:variables})
             .then(res => {
-                const newPosition = res.data.createOption
+                //const newPosition = res.data.createOption
                 props.refetch()
             })
             .catch((e) => {
@@ -99,8 +99,10 @@ const AddOption = (props) => {
         setFormData( { name:"startDate", value:startDate } )
         setFormData( { name:"quantity", value:1 } )
         setFormData( { name:"entryCost", value:0 } )
+        setStartDate2( startDate )
+        setEndDate2( endDate )
         setServerResult( true )
-    },[])
+    },[ startDate, endDate ])
 
     return (
         <div className={'flex w-100'}>

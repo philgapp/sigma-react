@@ -8,6 +8,8 @@
     border-color: rgb(118, 118, 118);
     display: none;
     z-index: 9999;
+    font-size: 1rem;
+    line-height: normal;
 }
 
 .popup {
