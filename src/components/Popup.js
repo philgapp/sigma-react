@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, useMemo, useCallback} from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { usePopper } from "react-popper";
 import '../styles/popper.css';
 
@@ -6,7 +6,7 @@ import '../styles/popper.css';
 Popup functional component creates tooltips, inputDropdowns, and modal popups. Built on usePopper React hook.
 
 Inputs
-popupId - default "temptempPopupId", expects a string to use for the component ID
+popupId - default "tempPopupId", expects a string to use for the component ID
 -- in parent component use like: const [ popupTrigger, setPopupTrigger ] = useState()
 type - default "tooltip", expects string "tooltip", "modal", or "inputDropdown"
 triggerType - default "mouseover" for tooltips, expects string "mouseover" or "refInputData"
@@ -19,7 +19,7 @@ options - defaults to null, usePopper option config object
 
 Returns
 Logical functionality for inputDropdowns, modals, tooltips and related event listeners.
-JSX for the appropriate DOM elements
+JSX for the appropriate DOM elements.
  */
 const Popup = (
     {   popupId = "tempPopupId",
@@ -30,6 +30,7 @@ const Popup = (
         setArrow = null,
         content,
         setInputData,
+        setStartDate,
         options = null }) => {
 
     // Local state
@@ -90,33 +91,44 @@ const Popup = (
     // Event Functions
     // - Selecting child elements of type "inputDropdown" popups
     // - keydown 'tab' or 'return'
-    const selectDropdownElement = useCallback( () => {
+    const selectDropdownElement = useCallback( ( keyAction ) => {
+        if( !dropdownContentRef.current.props ) {
+            console.log("no dropdown content")
+            return
+        }
+        if( keyAction === "tab" ) {
+            if( isKeyboardListenerActive.current ) {
+                isKeyboardListenerActive.current = false
+                processKeyboardInput() }
+            hidePopup()
+            return
+        }
+        if( !listElementRef.current && dropdownContentRef.current.props.children.length > 0 ) {
+            listElementRef.current = document.getElementById( dropdownContentRef.current.props.children[0].props.id )
+        }
         if( listElementRef.current ) {
             setInputData( { name: "_id", value: listElementRef.current.getAttribute( 'id' ) } )
             setInputData( { name: "symbol", value: ( listElementRef.current.textContent || listElementRef.current.innerText ) } )
+            setStartDate( new Date( listElementRef.current.getAttribute( 'startDate' ) ) )
             //trigger.value = ( listElementRef.current.textContent || listElementRef.current.innerText )
             hidePopup()
-        } else {
-            return
         }
-    }, [ trigger, setInputData, hidePopup ] )
+    }, [ setInputData, hidePopup ] )
     // - Highlighting element in a populated, visible inputDropdown popup
     // - keydown up and down arrows
     const highlightDropdownElement = useCallback( ( keyAction ) => {
         // Set rawSymbols = DOM symbol list elements in the dropdown
         const rawSymbols = dropdownContentRef.current.props.children
-
         // If rawSymbols has no elements, clear symbolsRef.current
         if( ! rawSymbols.length > 0 ) {
-            console.log('rawSymbols has no elements, clear symbolsRef.current')
+            // Is this necessary?
+            // console.log('rawSymbols has no elements, clear symbolsRef.current')
         }
-
         // If there is a symbolsRef.current with selected: true,
         // there are multiple possible choices,
         // and the up or down arrow key was pressed,
         // set selected: false on the currently true element and selected: true for the previous or next element as appropriate
         if( symbolsRef.current.some( (element) => {
-            //console.log(element)
             return element.selected === true
         })) {
             if( dropdownContentRef.current.props.children.length > 1 && ( keyAction === "downArrow" || keyAction === "upArrow" ) ) {
@@ -127,10 +139,12 @@ const Popup = (
                         return dropdownContentRef.current.props.children.map( ( child ) => {
                             return child.props.id
                         }).indexOf( element.id )
+                    } else {
+                        return null
                     }
                 })
                 let index = indexTest.find( (key) => {
-                    return key != undefined
+                    return key !== null
                 })
                 if( keyAction === "downArrow" ) {
                     index += 1
@@ -140,18 +154,14 @@ const Popup = (
                 }
                 if( index < 0 ) index = 0
                 if( index >= dropdownContentRef.current.props.children.length ) index = dropdownContentRef.current.props.children.length - 1
-                console.log(dropdownContentRef.current.props.children.length)
-                console.log(index)
                 listElementRef.current = document.getElementById( dropdownContentRef.current.props.children[index].props.id )
                 listElementRef.current.setAttribute( 'selected', "" )
                 symbolsRef.current[index].selected = true
             }
             return
         }
-
         // If symbolsRef.current has no elements, set it based on rawSymbols
         if( symbolsRef.current.length === 0 ) {
-            console.log('symbolsRef.current = 0 and is being set for the first time')
             symbolsRef.current = rawSymbols.map( ( element ) => {
                 return {
                     symbol: element.props.children,
@@ -159,12 +169,10 @@ const Popup = (
                     selected: false }
             } )
         }
-
         // If there is NOT a symbolsRef.current with selected: true, set the first item to selected: true
         if( !symbolsRef.current.some( (element) => {
             return element.selected === true
         })) {
-            console.log('there is no selected symbolsRef.current element, so set the first element to selected')
             const singleElement = document.getElementById( dropdownContentRef.current.props.children[0].props.id )
             listElementRef.current = singleElement
             symbolsRef.current.map( (element) => {
@@ -172,6 +180,7 @@ const Popup = (
                     element.selected = true
                     listElementRef.current.setAttribute( 'selected', "" )
                 }
+                return true
             })
         }
     }, [] )

@@ -13,7 +13,9 @@ const Table = (
         refetch,
         setDataVariables,
         archiveText,
-        setArchiveText }) => {
+        setArchiveText,
+        setEditForm,
+        setElement } ) => {
 
     const { items, requestSort, sortConfig } = useSortableData(data);
     const [ switchOptionTypeButton, setSwitchOptionTypeButton ] = useState("Open")
@@ -21,8 +23,8 @@ const Table = (
     const collect = ( element ) => {
         return { element: element } }
 
-    const toggleOptionTypeButton = (content) => {
-        if (content === "Open") {
+    const toggleOptionTypeButton = ( content ) => {
+        if( content === "Open" ) {
             setSwitchOptionTypeButton("Closed")
             setDataVariables( { input: { userId: userId, open: false } } )
         } else {
@@ -239,8 +241,8 @@ const Table = (
             <>
                 <table>
                     <caption className={'f4 darkRed bold pb3'}>
-                        <button onClick={() => toggleOptionTypeButton(switchOptionTypeButton)}>
-                            {switchOptionTypeButton}</button>
+                        <button onClick={() => toggleOptionTypeButton( switchOptionTypeButton )}>
+                            { switchOptionTypeButton }</button>
                         Underlying Positions</caption>
                     <thead>
                     <tr key={"header-row"}>
@@ -284,7 +286,7 @@ const Table = (
                     </thead>
                     <tbody>
 
-                    {items.map( (item) => (
+                    { items.map( ( item ) => (
                         <ContextMenuTrigger
                             renderTag={"tr"}
                             name={item._id}
@@ -300,12 +302,14 @@ const Table = (
                             <td key={item._id + 6}>${item.targetPriceMonth}</td>
                         </ContextMenuTrigger> ) ) }
 
-                    {items.map( (item) => (
+                    { items.map( ( item ) => (
                         <CustomContextMenu
-                            key={item._id + 1}
+                            key={ item._id + 1 }
                             elementId={"SIMPLE_" + item._id}
-                            archiveText={archiveText}
-                            setArchiveText={setArchiveText} /> ) ) }
+                            archiveText={ archiveText }
+                            setArchiveText={ setArchiveText }
+                            setEditForm={ setEditForm }
+                            setElement={ setElement } /> ) ) }
 
                     </tbody>
                 </table>

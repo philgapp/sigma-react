@@ -11,8 +11,9 @@ const CustomContextMenu = (
         actions = null,
         elementId = null,
         archiveText,
-        setArchiveText
-    }) => {
+        setArchiveText,
+        setEditForm,
+        setElement } ) => {
 
     // TODO break this out into useArchive or something similar - along with form below under 'delete' case
     const itemId = useRef('')
@@ -124,16 +125,22 @@ const CustomContextMenu = (
         e.preventDefault()
         e.stopPropagation()
         //isModalOpen ? hideModal() : setIsModalOpen(true)
-        setReferenceEl(data.target.closest('tr'))
+        setReferenceEl( data.target.closest('tr') )
         const id = data.element.optionId
         itemId.current = id
         const clickAction = data.action
-        switch (clickAction) {
+        switch ( clickAction ) {
             // TODO import and setModalContent form 'fragments' per case
             case "edit":
-                setModalContent(
-                    <p>Edit {id}</p>
-                )
+                if( setEditForm ) {
+                    setElement( id )
+                    setEditForm( true )
+                } else {
+                    setModalContent(
+                        <p>Edit {id}</p>
+                    )
+                }
+                return
                 break
             case "close":
                 setModalContent(
