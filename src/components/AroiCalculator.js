@@ -1,4 +1,4 @@
-import React, { useReducer, useState, useEffect } from 'react';
+import React, {useReducer, useState, useEffect, useCallback} from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -27,18 +27,18 @@ const AroiCalculator = (props) => {
     const [roi, setRoi] = useState(null)
     const [aroi, setAroi] = useState(null)
 
-    const calcAroi = () => {
+    const calcAroi = useCallback( () => {
         const aroiDays = ((endDate - startDate)/86400000)
         setDays(aroiDays)
         const tempRoi = formData.premium / formData.strike
         const tempAroi = (tempRoi/aroiDays)*365
         setRoi((tempRoi*100).toFixed(2))
         if(!isNaN(tempAroi)) setAroi((tempAroi*100).toFixed(2))
-    }
+    }, [ formData.strike, formData.premium, startDate, endDate ] )
 
     useEffect(() => {
         calcAroi()
-    }, [formData.strike,formData.premium,startDate,endDate,days])
+    }, [ formData.strike, formData.premium, startDate, endDate, days, calcAroi ])
 
     const handleChange = event => {
         if(event.target.name === 'startDate') setStartDate(event.target.value)

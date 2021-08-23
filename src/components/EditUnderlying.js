@@ -1,12 +1,16 @@
 import React, { useReducer, useState, useEffect } from 'react';
 import DatePicker from "react-datepicker";
 import useAuth from '../helpers/useAuth'
-import useAddUnderlyingMutation from "../queries/useAddUnderlyingMutation";
-import Popup from "../components/Popup"
+import useEditUnderlyingMutation from "../queries/useEditUnderlyingMutation";
+import DateFromInt from '../helpers/Date';
 
-const AddUnderlying = (
-    {   underlyingTrades,
-        refetch } ) => {
+const EditUnderlying = (
+    {   position,
+        setShowEditForm } ) => {
+
+    const [ positionTrades, setPositionTrades ] = useState([])
+    const [ selectedTrade, setSelectedTrade ] = useState({})
+    const [ isTradeSelected, setIsTradeSelected ] = useState(false)
 
     const formReducer = (state, event) => {
         return {
@@ -25,17 +29,42 @@ const AddUnderlying = (
     }
 
     const auth = useAuth()
-    const runAddUnderlying = useAddUnderlyingMutation()
-    const [ formData, setFormData ] = useReducer(formReducer, { name: "symbol", value: "" })
-    const [ validSymbol, setValidSymbol ] = useState(false)
-    const [ tradeDate, setTradeDate ] = useState(today)
-    const [ startDate, setStartDate ] = useState(today)
-    // Only added to prevent issue with search after changing Underlying query data to closed trades in UI
-    // @TODO simple and more robust solution
-    const [ openUnderlyingTrades, setOpenUnderlyingTrades] = useState(underlyingTrades)
+    const runEditUnderlying = useEditUnderlyingMutation()
+    const [ formData, setFormData ] = useReducer(formReducer, {} )
 
-    const [ popupTrigger, setPopupTrigger ] = useState()
-    const [ dropdownData, setDropdownData ] = useState([])
+    const selectTrade = ( event ) => {
+        event.preventDefault()
+        const index = event.target.id
+        //setIsTradeSelected(true)
+        setSelectedTrade( position.underlyingTrades[ index ] )
+    }
+
+    const EditMenu = ( { data } ) => {
+        return (
+            <nav>
+                <h4>Choose an individual trade to edit:</h4>
+                { data.map( ( trade ) => {
+                    return (
+                        <button
+                            onClick={ ( e) => selectTrade( e ) }
+                            key={ data.indexOf( trade ) }
+                            id={ data.indexOf( trade ) } >
+                            { DateFromInt( trade.tradeDate ) } - { trade.tradeType } - { trade.tradeShares } shares</button> ) } )
+                }
+            </nav> )
+    }
+
+    const setIndividualTradeData = ( position ) => {
+        if( position ) {
+            setPositionTrades( position.underlyingTrades.map( ( trade ) => {
+                const tradeLeg ={
+                    tradeDate: trade.tradeDate,
+                    tradeType: trade.type,
+                    tradeShares: trade.shares }
+                return tradeLeg
+            } ) )
+        }
+    }
 
     const processFormData = () => {
         const underlyingTradeInput = {
@@ -46,21 +75,11 @@ const AddUnderlying = (
         const underlyingInput = {
             _id: formData._id,
             userId: auth.user._id,
-            symbol: formData.symbol.toUpperCase(),
+            //symbol: formData.symbol.toUpperCase(),
             startDate: formData.startDate,
             underlyingTrades: underlyingTradeInput }
         return {
             input: underlyingInput }
-    }
-
-    const forceSymbolRefresh = () => {
-        const elem = document.getElementById("symbol")
-        //const event = new Event('input', { bubbles: true } )
-        const nativeInputValueSetter = Object.getOwnPropertyDescriptor( window.HTMLInputElement.prototype, "value" ).set
-        nativeInputValueSetter.call( elem, "")
-        //const trigger = elem.dispatchEvent( event )
-        nativeInputValueSetter.call( elem, formData.symbol )
-        //const trigger2 = elem.dispatchEvent( event )
     }
 
     const handleSubmit = event => {
@@ -72,49 +91,14 @@ const AddUnderlying = (
         // @TODO typing and validation
         if( variables.input.underlyingTrades.price === 0 && variables.input.underlyingTrades.shares === 0 ) return
 
-        runAddUnderlying({ variables: variables } )
-            .then(res => {
-                refetch()
-                forceSymbolRefresh() } )
+        runEditUnderlying( { variables: variables } )
+            .then(res => { } )
             .catch( ( e ) => {
                 console.error( e ) } )
     }
 
-    const historyFilter = (openTradesArray, query) => {
-        if( (openTradesArray.length < 1) || (query.length < 1) ) return
-        if( openTradesArray && query.length > 0 ) {
-            // Search only for match starting from the beginning
-            const regexQuery = new RegExp( "^" + query )
-            const filterResult = openTradesArray.filter( trade =>
-                !trade.endDate
-                &&
-                trade.symbol.toUpperCase().match( regexQuery ) )
-            return filterResult }
-    }
-
-    const loadUnderlyingPositions = ( matchingPositions, eventValue ) => {
-        if( matchingPositions.length ) {
-            matchingPositions.sort( function( a, b ) {
-                if( a.symbol > b.symbol ) return 1
-                if( a.symbol < b.symbol ) return -1
-                return 0 } )
-            // setFormData( { name: "_id", value: matchingPositions[0]._id } )
-            // setFormData( { name: "symbol", value: eventValue } )
-            const data = (
-                <ul id={ "underlyingDropdownList" } >
-                    { matchingPositions.map( ( position ) => (
-                         <li key={ position.id } id={ position._id } startDate={ position.startDate } >
-                            { position.symbol }</li> ) ) }
-                </ul> )
-            setDropdownData( data ) }
-    }
-
-    const unloadUnderlyingPositions = () => {
-        setFormData( { name: "_id", value: null } )
-        setDropdownData( [] )
-    }
-
     const handleChange = event => {
+        /*
         if( event.target.name === "symbol" ) {
             const eventValue = event.target.value
             setFormData ( { name: "symbol", value: eventValue } )
@@ -132,28 +116,47 @@ const AddUnderlying = (
                 setValidSymbol(true )
             }
         }
+
         if( !event.target.name.includes('Date') ) event.preventDefault()
         if( event.target.name === 'tradeDate' ) setTradeDate(event.target.value)
         if( event.target.name === 'startDate' ) setStartDate(event.target.value)
+
+         */
         setFormData(
             {   name: event.target.name,
                 value: event.target.value, } )
     }
 
-    // @TODO test changing inputs in non linear order to see if this break some of the data
     // Set formData defaults on initial load
     useEffect(() => {
-        setFormData( { name: "type", value: 'Buy' } )
-        setFormData( { name: "startDate", value: startDate } )
-        setFormData( { name: "tradeDate", value: tradeDate } )
-        setFormData( { name: "shares", value: 0 } )
-        setFormData( { name: "price", value: 0 } )
-        setFormData( { name: "_id", value: null } )
-        if( underlyingTrades.length > 0 ) setOpenUnderlyingTrades( underlyingTrades )
-    },[ startDate, tradeDate, underlyingTrades, setOpenUnderlyingTrades ] )
+        if( !isTradeSelected ) {
+            setIndividualTradeData( position )
+            setIsTradeSelected(true)
+            setSelectedTrade( position.underlyingTrades[0] )
+        }
+        if( isTradeSelected ) {
+            if ( ! position.underlyingTrades.includes( selectedTrade ) ) {
+                console.log("position changed")
+                setIndividualTradeData( position )
+                setSelectedTrade( position.underlyingTrades[0] )
+            }
+            console.log(position)
+            console.log(selectedTrade)
+            setFormData( { name: "symbol", value: position.symbol } )
+            setFormData( { name: "type", value: selectedTrade.type } )
+            setFormData( { name: "startDate", value: new Date( position.startDate ) } )
+            setFormData( { name: "tradeDate", value: new Date( selectedTrade.tradeDate ) } )
+            setFormData( { name: "shares", value: selectedTrade.shares } )
+            setFormData( { name: "price", value: selectedTrade.price } )
+            setFormData( { name: "_id", value: position._id } )
+        }
+    },[ position, isTradeSelected, selectedTrade ] )
 
     return (
         <div className={'flex w-100'}>
+            { positionTrades.length > 0 &&
+                <EditMenu data={ positionTrades } /> }
+
             <form onSubmit={ ( event) => handleSubmit( event ) }
                   className={'pl3 w-100'}>
                 <fieldset>
@@ -169,39 +172,24 @@ const AddUnderlying = (
                                 placeholder={'SPY'}
                                 id={"symbol"}
                                 name={'symbol'}
-                                onChange={ handleChange }
-                                ref={ setPopupTrigger }/>
-                            <p>{formData._id}</p>
-                            <p>{formData.symbol}</p>
-                            <Popup
-                                popupId={"underlyingSymbolDropdown"}
-                                type={"inputDropdown"}
-                                triggerType={"refInputData"}
-                                trigger={ popupTrigger }
-                                content={ dropdownData }
-                                setInputData={ setFormData }
-                                setStartDate={ setStartDate }
-                                options={ {
-                                    offset: [-30, 0],
-                                    placement: 'bottom' } } />
+                                onChange={ handleChange } />
                         </label>
                     </div>
-                    { validSymbol &&
+
                         <div className={'w-50'}>
                             <label className={'w-50'}>
                                 <p className={'required'}>Start Date</p>
-                                <DatePicker className={'dateInput'} selected={startDate}
+                                <DatePicker className={'dateInput'} selected={formData.startDate}
                                             onChange={ date => handleChange(
                                             { target: {
                                                     name: 'startDate',
                                                     value: date
                                                 } } ) } />
                             </label>
-                        </div> }
+                        </div>
 
                 </fieldset>
 
-                { validSymbol &&
                 <fieldset>
                     <div className={'w-50'}>
                         <label>
@@ -219,7 +207,7 @@ const AddUnderlying = (
                         <label className={'w-50'}>
                             <p className={'required'}>
                                 Trade Date</p>
-                            <DatePicker className={'dateInput'} selected={tradeDate}
+                            <DatePicker className={'dateInput'} selected={formData.tradeDate}
                                         onChange={date => handleChange({ target: { name: 'tradeDate', value: date } } ) } />
                         </label>
                     </div>
@@ -241,12 +229,14 @@ const AddUnderlying = (
                         </label>
                     </div>
                     <button type={'submit'} className={'mt3 pa3 add'}>
-                        Add Underlying Trade</button>
-                </fieldset> }
+                        Submit Changes</button>
+                    <button className={'mt3 pa3 add'} onClick={ () => setShowEditForm( false ) } >
+                        Hide Edit Form</button>
+                </fieldset>
 
             </form>
         </div>
     )
 }
 
-export default AddUnderlying
+export default EditUnderlying

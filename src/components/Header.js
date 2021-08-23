@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import useAuth, { SignoutButton } from '../helpers/useAuth'
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Header = (props) => {
     //const { header } = props;
@@ -12,12 +12,12 @@ const Header = (props) => {
 
     const toggleUserMenu = props => {
         props.e.preventDefault()
-        props.showUserMenu == false ? setShowUserMenu(true) : setShowUserMenu(false)
+        props.showUserMenu === false ? setShowUserMenu(true) : setShowUserMenu(false)
     }
 
     return (
         <>
-            <div className={"Header"}>
+            <div className={"Header"} id={"Header"}>
                 <div className={"flex w-100"}>
 
                     <div className={"flex w-75 fl"}>
@@ -32,10 +32,10 @@ const Header = (props) => {
                     {auth.authenticated &&
                     <div className={"w-25 fr"}>
                         <div className={"userSettings self-start"}>
-                            <a className={"userButton"}
+                            <button className={"userButton"}
                                onClick={(e) => toggleUserMenu({e, showUserMenu: showUserMenu})}>
                                 {firstName || ""}
-                            </a>
+                            </button>
                         </div>
                     </div>
                     }
@@ -47,8 +47,13 @@ const Header = (props) => {
                 {auth.authenticated &&
                 <nav className={"mt2 mb2"}>
                     <ul className={"flex list"}>
+                        {auth.isAdmin &&
                         <li className={'pa2 dashboardIcon'}>
-                            <Link to={'/dashboard'}>Dashboard </Link>
+                            <Link to={'/members'}>Members</Link>
+                        </li>
+                        }
+                        <li className={'pa2 dashboardIcon'}>
+                            <Link to={'/dashboard'}>Dashboard</Link>
                         </li>
                         <li className={'pa2 optionIcon'}>
                             <Link to={'/options'}>Options</Link>
