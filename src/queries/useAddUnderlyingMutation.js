@@ -16,7 +16,9 @@ const addUnderlyingMutation = gql`
   }
 `;
 
-export default (variables) => {
+const useAddUnderlyingMutation = (variables) => {
     const [addUnderlying] = useMutation(addUnderlyingMutation, variables);
     return addUnderlying
-};
+}
+
+export default useAddUnderlyingMutation

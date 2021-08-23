@@ -4,16 +4,33 @@ import DateFromInt from '../helpers/Date';
 import DashboardChart from './DashboardChart';
 import Table from './Table'
 import useAuth from "../helpers/useAuth";
+import { withRouter } from "react-router-dom";
 
 const Dashboard = (props) => {
     const auth = useAuth()
+    const { showForm,
+        showOptionForm,
+        optionFormButtonText,
+        history } = props
     const dashboardQueryVars = { id: auth.user._id }
     const { data, refetch } = useDashboardQuery( {variables: dashboardQueryVars } );
     const apiData = data ?  data.getDashboard : null
+
+    const handleClick = (event) => {
+        event.preventDefault()
+        showForm(false)
+        history.push('/options')
+    }
+
     return (
         <div className={"appPage w-100"}>
             {apiData &&
                 <div>
+                    {!showOptionForm &&
+                    <button onClick={handleClick} className={'ml3 mt4 pa3 add'}>
+                        {optionFormButtonText}
+                    </button>
+                    }
                     <div className={"dashPage flex"}>
                         <div className={"dashboardLeft w-50 pl4"}>
                             <p className={"dashboardLabel"} >
@@ -47,11 +64,16 @@ const Dashboard = (props) => {
                         <p className={"dashboardLabel"}>Next Expiration: <span className={"bold"} >{DateFromInt(apiData.options.nextExpiry)}</span></p>
                     </div>
 
-                    <Table data={apiData.underlying.symbols} numPositions={apiData.underlying.numberOpen} tableType={"dashboardUnderlying"}/>
+                    <Table
+                        data={apiData.underlying.symbols}
+                        numPositions={apiData.underlying.numberOpen}
+                        tableType={"dashboardUnderlying"}
+                        refetch={refetch}
+                    />
                 </div>
             }
         </div>
     );
 };
 
-export default Dashboard;
+export default withRouter(Dashboard);

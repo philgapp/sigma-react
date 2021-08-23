@@ -1,0 +1,131 @@
+.tooltip {
+    background: rgb(239, 239, 239);
+    padding: 4px 8px;
+    min-height: 160px;
+    border-radius: 6px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(118, 118, 118);
+    display: none;
+    z-index: 9999;
+    font-size: 1rem;
+    line-height: normal;
+}
+
+.popup {
+    color: #cccccc;
+    background: #373a3c;
+    border-radius: 6px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: black;
+    display: none;
+    z-index: 9999;
+}
+
+.tooltipBackdrop {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    display: none;
+}
+
+.tooltip[data-show], .tooltipBackdrop[data-show], .popup[data-show] {
+    display: block;
+}
+
+.tooltip[data-popper-placement^='top'] > .arrow {
+    bottom: -4px;
+}
+
+.tooltip[data-popper-placement^='bottom'] > .arrow {
+    top: -4px;
+}
+
+.tooltip[data-popper-placement^='left'] > .arrow {
+    right: -4px;
+}
+
+.tooltip[data-popper-placement^='right'] > .arrow {
+    left: -4px;
+}
+
+.tooltip[data-show], .tooltipBackdrop[data-show], .popup[data-show] {
+    display: block;
+}
+
+.popup[data-popper-placement^='top'] > .arrow {
+    bottom: -4px;
+}
+
+.popup[data-popper-placement^='bottom'] > .arrow {
+    top: -4px;
+}
+
+.popup[data-popper-placement^='left'] > .arrow {
+    right: -4px;
+}
+
+.popup[data-popper-placement^='right'] > .arrow {
+    left: -4px;
+}
+
+button#closeModal {
+    position: absolute;
+    top: 110px;
+    right: 100px;
+}
+
+button.archiveSubmit {
+    position: absolute;
+    top: 110px;
+    right: 10px;
+}
+
+.trigger {
+    cursor: help;
+}
+
+.arrow {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+}
+.arrow:after {
+     content: " ";
+     position: absolute;
+     top: -25px;
+    padding-left: 0;
+     transform: rotate(45deg);
+     width: 10px;
+     height: 10px;
+     background-color: white;
+     box-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
+}
+
+#underlyingSymbolDropdown {
+    width: 200px;
+    border-width: 1px;
+    border-radius: 0;
+    background-color: #ffffff;
+    color: black;
+}
+
+#underlyingSymbolDropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+#underlyingSymbolDropdown li {
+    padding: 2px 8px;
+}
+#underlyingSymbolDropdown li[selected] {
+    background: dodgerblue;
+}

@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+  sigma-frontend:
+    build:
+      context: .
+    ports:
+      - "3000:80"
+    networks:
+      - sigmanet
+networks:
+  sigmanet:

@@ -7,6 +7,10 @@ p {
   padding: 4px 0;
 }
 
+.upperCase {
+  text-transform: uppercase;
+}
+
 .f3 {
   font-weight: bold;
   color: #C13C37;
@@ -26,6 +30,19 @@ p {
 
 .bold {
   font-weight: bold;
+}
+
+.invisibleRow {
+  border-width: 0;
+  border-spacing: 0;
+  height: 0;
+  line-height: 0;
+  font-size: 0;
+  padding: 0;
+  margin: 0;
+}
+.invisibleCell {
+  border:0;
 }
 
 .Header {
@@ -57,16 +74,18 @@ p {
   text-align: right;
 }
 
-.Header .userSettings a.userButton {
+.Header .userSettings .userButton {
+  border: none;
   padding-right:42px;
   background-image: url(../assets/menuIcon3.png);
   background-repeat: no-repeat;
   background-size: 28px;
   background-position: right center;
+  background-color: transparent;
   font-size: 1.2em;
 }
 
-.Header .userSettings a.userButton:hover {
+.Header .userSettings .userButton:hover {
   cursor: pointer;
   color: black;
 }

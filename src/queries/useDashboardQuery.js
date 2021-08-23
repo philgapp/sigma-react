@@ -28,4 +28,6 @@ const dashboardQuery = gql`
   }
 `;
 
-export default (variables) => useQuery(dashboardQuery, variables);
+const useDashboardQuery = (variables) => useQuery(dashboardQuery, variables)
+
+export default useDashboardQuery

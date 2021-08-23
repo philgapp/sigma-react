@@ -68,7 +68,7 @@ const AddBanking = (props) => {
     useEffect(() => {
         setFormData({ name: "date", value: date })
         setFormData({ name: "type", value: "Deposit" })
-    },[])
+    },[date])
 
     return (
         <div className={'flex w-100'}>

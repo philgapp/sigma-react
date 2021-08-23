@@ -1,17 +1,14 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {
     BrowserRouter as Router,
     Switch,
     Route,
     useLocation,
     Redirect,
-    Link,
-    useHistory
 } from "react-router-dom";
 import '../styles/App.css';
 import useAuth, {
     ProvideAuth,
-    AuthButton
 }  from '../helpers/useAuth'
 import Login from './Login'
 import Header from './Header';
@@ -19,9 +16,18 @@ import Dashboard from './Dashboard';
 import Options from './Options';
 import Underlying from './Underlying';
 import AroiCalculator from './AroiCalculator';
-import AddItem from './AddItem'
+import useOptionForm from '../helpers/useOptionForm'
+//import AddItem from './AddItem'
 
 function App() {
+
+    // addOption Form State Hook
+    const {
+        showOptionForm,
+        optionFormButtonText,
+        showForm
+    } = useOptionForm()
+
     return (
         <ProvideAuth>
             <Router>
@@ -30,26 +36,25 @@ function App() {
 
                 <Switch>
                     <PrivateRoute path="/aroi">
-                        <AroiCalculator />
-                    </PrivateRoute>
+                        <AroiCalculator /> </PrivateRoute>
                     <PrivateRoute path="/options">
-                        <Options />
-                    </PrivateRoute>
+                        <Options
+                            showForm={showForm}
+                            showOptionForm={showOptionForm}
+                            optionFormButtonText={optionFormButtonText} /> </PrivateRoute>
                     <PrivateRoute path="/underlying">
-                        <Underlying />
-                    </PrivateRoute>
+                        <Underlying /> </PrivateRoute>
                     <PrivateRoute path="/dashboard">
-                        <Dashboard />
-                    </PrivateRoute>
+                        <Dashboard
+                            showForm={showForm}
+                            showOptionForm={showOptionForm}
+                            optionFormButtonText={optionFormButtonText} /> </PrivateRoute>
                     <Route path="/login">
-                        <Login />
-                    </Route>
+                        <Login /> </Route>
                     <Route path="/">
-                        <Login />
-                    </Route>
+                        <Login /> </Route>
                     <Route path="*">
-                        <NoMatch />
-                    </Route>
+                        <NoMatch /> </Route>
                 </Switch>
 
                 </div>
@@ -58,25 +63,22 @@ function App() {
     );
 }
 
-function PrivateRoute({ children, ...rest }) {
+function PrivateRoute( { children, ...rest } ) {
     const auth = useAuth();
     return (
         <Route
-            {...rest}
-            render={({ location }) =>
-                auth.authenticated ? (
-                    children
-                ) : (
+            { ...rest }
+            render={ ( { location } ) =>
+                auth.authenticated
+                    ? ( children )
+                    : (
                     <Redirect
                         to={{
                             pathname: "/login",
                             state: { from: location }
-                        }}
-                    />
-                )
-            }
-        />
-    );
+                        }} /> )
+            } />
+    )
 }
 
 function NoMatch() {
@@ -85,10 +87,8 @@ function NoMatch() {
     return (
         <div>
             <h3>
-                No match for <code>{location.pathname}</code>
-            </h3>
-        </div>
-    );
+                No match for <code>{location.pathname}</code> </h3>
+        </div> )
 }
 
 export default App;

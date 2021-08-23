@@ -1,3 +1,21 @@
+# Sigma React Frontend
+This project was built with [Create React App](https://github.com/facebook/create-react-app) and uses yarn. Docker and Nginx are used for deployment. This frontend requires correct configuration to connect with the Sigma Backend API to do anything :)
+
+API Configuration is now simply line 17 of src/index.js - to be remedied soon!
+
+## Setup / run in development:
+### `yarn install`
+### `yarn start`
+
+## Deploy production Docker container:
+### `yarn install`
+### `yarn build`
+### `docker-compose run` 
+(you can also use '--build' to ensure a new image is built before running)
+
+
+
+# ORIGINAL DOCUMENTATION BELOW:
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
