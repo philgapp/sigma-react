@@ -16,7 +16,7 @@ console.log(process.env)
 
 // 2
 const httpLink = createHttpLink({
-    uri: process.env.API_URL + ':' + process.env.PORT + '/graphql',
+    uri: process.env.REACT_APP_API_URL,
     // @TODO make this an ENV variable and prep dev vs. prod envs!
     credentials: 'include'
 });
