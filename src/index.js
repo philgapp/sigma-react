@@ -12,6 +12,8 @@ import {
     InMemoryCache
 } from '@apollo/client';
 
+console.log(process.env)
+
 // 2
 const httpLink = createHttpLink({
     uri: process.env.API_URL + ':' + process.env.PORT + '/graphql',
