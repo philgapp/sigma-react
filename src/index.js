@@ -14,7 +14,7 @@ import {
 
 // 2
 const httpLink = createHttpLink({
-    uri: 'http://localhost:4000/graphql',
+    uri: process.env.API_URL + ':' + process.env.PORT + '/graphql',
     // @TODO make this an ENV variable and prep dev vs. prod envs!
     credentials: 'include'
 });
